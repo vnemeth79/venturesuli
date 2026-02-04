@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venturesuli - Tanuld meg a startup finanszírozás titkait!</title>
+    <meta name="description" content="Interaktív online tanfolyam a startup tőkebevonásról. Értsd meg a term sheet-eket, tárgyalj magabiztosan a VC-kkel!">
+    <style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.75) 0%, rgba(30, 41, 59, 0.7) 50%, rgba(15, 23, 42, 0.75) 100%), 
+                url('venturesuli-background.png') center top / cover no-repeat fixed;
+    color: #e2e8f0;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 60px 20px 40px;
+}
+
+.badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: #fff;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hero h1 {
+    font-size: clamp(32px, 6vw, 52px);
+    color: #fff;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.hero h1 span {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero .subtitle {
+    font-size: 20px;
+    color: #94a3b8;
+    max-width: 600px;
+    margin: 0 auto 32px;
+}
+
+.hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+    padding: 18px 40px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s;
+    box-shadow: 0 10px 40px rgba(34, 197, 94, 0.3);
+}
+
+.hero-cta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 50px rgba(34, 197, 94, 0.4);
+}
+
+.hero-situations {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 24px 32px;
+    margin: 24px auto;
+    max-width: 500px;
+    text-align: left;
+}
+
+.hero-situations p {
+    margin: 0 0 16px 0;
+    color: #94a3b8;
+    font-size: 16px;
+}
+
+.hero-situations ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.hero-situations li {
+    padding: 8px 0;
+    color: #e2e8f0;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.hero-situations li strong {
+    color: #22c55e;
+}
+
+.hero-price {
+    margin-top: 16px;
+    color: #94a3b8;
+    font-size: 15px;
+}
+
+.hero-price strong {
+    color: #fbbf24;
+    font-size: 18px;
+}
+
+.scroll-hint {
+    margin-top: 32px;
+    color: #64748b;
+    font-size: 14px;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+}
+
+/* Problem Section */
+.problem {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 16px;
+    padding: 40px;
+    margin: 40px 0;
+}
+
+.problem h2 {
+    color: #f87171;
+    font-size: 24px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.problem ul {
+    list-style: none;
+}
+
+.problem li {
+    padding: 12px 0;
+    padding-left: 32px;
+    position: relative;
+    color: #fca5a5;
+    font-size: 17px;
+}
+
+.problem li::before {
+    content: "✗";
+    position: absolute;
+    left: 0;
+    color: #ef4444;
+    font-weight: bold;
+}
+
+/* Solution Section */
+.solution {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: 16px;
+    padding: 40px;
+    margin: 40px 0;
+}
+
+.solution h2 {
+    color: #4ade80;
+    font-size: 24px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.solution ul {
+    list-style: none;
+}
+
+.solution li {
+    padding: 12px 0;
+    padding-left: 32px;
+    position: relative;
+    color: #86efac;
+    font-size: 17px;
+}
+
+.solution li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #22c55e;
+    font-weight: bold;
+}
+
+/* Modules Section */
+.modules {
+    margin: 60px 0;
+}
+
+.modules h2 {
+    text-align: center;
+    font-size: 32px;
+    color: #fff;
+    margin-bottom: 40px;
+}
+
+.modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.module-card {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 24px;
+    transition: all 0.3s;
+}
+
+.module-card:hover {
+    border-color: #3b82f6;
+    transform: translateY(-4px);
+}
+
+.module-card .icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+}
+
+.module-card h3 {
+    color: #fff;
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+.module-card p {
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.module-card .time {
+    display: inline-block;
+    margin-top: 12px;
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+/* Features */
+.features {
+    margin: 60px 0;
+    text-align: center;
+}
+
+.features h2 {
+    font-size: 32px;
+    color: #fff;
+    margin-bottom: 40px;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+}
+
+.feature {
+    padding: 24px;
+}
+
+.feature .icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.feature h3 {
+    color: #fff;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.feature p {
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+/* Pricing */
+.pricing {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    border-radius: 20px;
+    padding: 50px;
+    margin: 60px 0;
+    text-align: center;
+}
+
+.pricing h2 {
+    font-size: 28px;
+    color: #fff;
+    margin-bottom: 16px;
+}
+
+.pricing .price-tag {
+    font-size: 64px;
+    font-weight: 800;
+    color: #fff;
+    margin: 24px 0;
+}
+
+.pricing .price-tag span {
+    font-size: 24px;
+    color: #94a3b8;
+}
+
+.pricing .price-note {
+    color: #94a3b8;
+    margin-bottom: 32px;
+}
+
+.pricing .cta-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+    padding: 20px 50px;
+    border-radius: 12px;
+    font-size: 20px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s;
+    box-shadow: 0 10px 40px rgba(34, 197, 94, 0.3);
+}
+
+.pricing .cta-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 50px rgba(34, 197, 94, 0.4);
+}
+
+.pricing .guarantee {
+    margin-top: 24px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+/* Target Audience */
+.audience {
+    margin: 60px 0;
+}
+
+.audience h2 {
+    text-align: center;
+    font-size: 32px;
+    color: #fff;
+    margin-bottom: 40px;
+}
+
+.audience-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.audience-card {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+}
+
+.audience-card .icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.audience-card h3 {
+    color: #fff;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.audience-card p {
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+/* Attribution */
+.attribution {
+    text-align: center;
+    padding: 40px 20px;
+    border-top: 1px solid #334155;
+    margin-top: 60px;
+}
+
+.attribution p {
+    color: #64748b;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.attribution .book {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.attribution a {
+    color: #60a5fa;
+    text-decoration: none;
+}
+
+.attribution a:hover {
+    text-decoration: underline;
+}
+
+/* FAQ */
+.faq {
+    margin: 60px 0;
+}
+
+.faq h2 {
+    text-align: center;
+    font-size: 32px;
+    color: #fff;
+    margin-bottom: 40px;
+}
+
+.faq-item {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+}
+
+.faq-item h3 {
+    color: #fff;
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+.faq-item p {
+    color: #94a3b8;
+    font-size: 15px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .hero { padding: 40px 16px 30px; }
+    .problem, .solution, .pricing { padding: 28px; }
+    .pricing .price-tag { font-size: 48px; }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero -->
+        <section class="hero">
+            <div class="badge">🎓 Venturesuli</div>
+            <h1>Tanuld meg a <span>startup finanszírozás</span> titkait!</h1>
+            <div class="hero-situations">
+                <p><strong>Ez a tanfolyam neked szól, ha:</strong></p>
+                <ul>
+                    <li>🚀 <strong>Startup alapító vagy</strong> és befektetőkkel tárgyalsz</li>
+                    <li>📄 <strong>Kaptál egy term sheet-et</strong> és szeretnéd érteni, mit írsz alá</li>
+                    <li>💡 <strong>Vállalkozást tervezel</strong> és fel akarsz készülni a jövőre</li>
+                    <li>🤝 <strong>Társalapító vagy CTO vagy</strong> és részt veszel a döntésekben</li>
+                    <li>💎 <strong>Részesedést szeretnél</strong> a munkádért, nem csak fizetést vagy napidíjat</li>
+                </ul>
+            </div>
+            <a href="auth.html?action=register" class="hero-cta">
+                Megkezdem a tanulást →
+            </a>
+            <p class="scroll-hint">↓ További okok a tanulásra ↓</p>
+        </section>
+
+        <!-- Problem -->
+        <section class="problem">
+            <h2>😰 Ismerős problémák?</h2>
+            <ul>
+                <li>Nem érted a term sheet-et, amit a VC elküldött</li>
+                <li>Fogalmad sincs, mi az a liquidation preference vagy anti-dilution</li>
+                <li>Félsz, hogy rossz deal-t kötsz és elúszik a céged</li>
+                <li>Az ügyvéded magyaráz, de nem érted, miről beszél</li>
+                <li>Nem tudod, mennyi tőkét kérj és milyen értékelésen</li>
+            </ul>
+        </section>
+
+        <!-- Solution -->
+        <section class="solution">
+            <h2>✨ A megoldás: Venturesuli</h2>
+            <ul>
+                <li>Világos, magyar nyelvű magyarázatok minden fogalomra</li>
+                <li>Konkrét számítási példák - pontosan látod, ki mennyit kap</li>
+                <li>Interaktív kvízek minden modul végén</li>
+                <li>Részletes összefoglalók PDF-ben letölthető</li>
+                <li>Brad Feld & Jason Mendelson bestseller könyve alapján</li>
+            </ul>
+        </section>
+
+        <!-- Modules -->
+        <section class="modules">
+            <h2>📚 Mit tanulsz?</h2>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="icon">👥</div>
+                    <h3>1. A Szereplők és az Ökoszisztéma</h3>
+                    <p>Ki kicsoda a VC világban? Hogyan működik a hierarchia? Mire figyelj az ügyvédválasztásnál?</p>
+                    <span class="time">⏱ 45 perc</span>
+                </div>
+                <div class="module-card">
+                    <div class="icon">🎯</div>
+                    <h3>2. Hogyan Szerezz Tőkét</h3>
+                    <p>A Yoda szabály. Mennyi tőkét kérj? A VC-k 4 típusa. Miért NE kérj NDA-t?</p>
+                    <span class="time">⏱ 60 perc</span>
+                </div>
+                <div class="module-card">
+                    <div class="icon">💰</div>
+                    <h3>3. Gazdasági Feltételek</h3>
+                    <p>Pre-money vs post-money csapda. Option pool. Liquidation preference. Anti-dilution.</p>
+                    <span class="time">⏱ 90 perc</span>
+                </div>
+                <div class="module-card">
+                    <div class="icon">🎛️</div>
+                    <h3>4. Kontroll Feltételek</h3>
+                    <p>Board of Directors. Protective provisions (vétójogok). Drag-along és konverziós jogok.</p>
+                    <span class="time">⏱ 60 perc</span>
+                </div>
+                <div class="module-card">
+                    <div class="icon">🏦</div>
+                    <h3>5. A VC Alapok Működése</h3>
+                    <p>LP vs GP struktúra. Management fee és carried interest. Az alap életciklusa.</p>
+                    <span class="time">⏱ 45 perc</span>
+                </div>
+                <div class="module-card">
+                    <div class="icon">🤝</div>
+                    <h3>6. Tárgyalási Taktikák</h3>
+                    <p>A három cél. BATNA és leverage. Amit SOHA ne csinálj. No-shop kezelése.</p>
+                    <span class="time">⏱ 75 perc</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="features">
+            <h2>🎁 Mit kapsz?</h2>
+            <div class="features-grid">
+                <div class="feature">
+                    <div class="icon">📖</div>
+                    <h3>6 Részletes Modul</h3>
+                    <p>~6 óra interaktív tartalom</p>
+                </div>
+                <div class="feature">
+                    <div class="icon">🧠</div>
+                    <h3>20+ Kvíz Kérdés</h3>
+                    <p>Teszteld a tudásod</p>
+                </div>
+                <div class="feature">
+                    <div class="icon">📊</div>
+                    <h3>Számítási Példák</h3>
+                    <p>Konkrét számokkal</p>
+                </div>
+                <div class="feature">
+                    <div class="icon">📥</div>
+                    <h3>PDF Letöltés</h3>
+                    <p>Offline tanuláshoz</p>
+                </div>
+                <div class="feature">
+                    <div class="icon">💾</div>
+                    <h3>Mentett Haladás</h3>
+                    <p>Folytasd, ahol abbahagytad</p>
+                </div>
+                <div class="feature">
+                    <div class="icon">♾️</div>
+                    <h3>Örök Hozzáférés</h3>
+                    <p>Egyszer fizetsz, örökre tiéd</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Target Audience -->
+        <section class="audience">
+            <h2>🎯 Kinek szól?</h2>
+            <div class="audience-grid">
+                <div class="audience-card">
+                    <div class="icon">👨‍💻</div>
+                    <h3>Startup Alapítók</h3>
+                    <p>Akik tőkebevonásra készülnek és érteni akarják a feltételeket</p>
+                </div>
+                <div class="audience-card">
+                    <div class="icon">💼</div>
+                    <h3>Társalapítók, CTO-k</h3>
+                    <p>Akik részt vesznek a tárgyalásokon és döntésekben</p>
+                </div>
+                <div class="audience-card">
+                    <div class="icon">📈</div>
+                    <h3>Leendő Vállalkozók</h3>
+                    <p>Akik a jövőben terveznek startupot indítani</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing -->
+        <section class="pricing">
+            <h2>Egy befektetés a jövődbe</h2>
+            <p class="price-note">Egyszeri díj • Örök hozzáférés • Azonnali kezdés</p>
+            <a href="auth.html?action=register" class="cta-btn">Megkezdem a tanulást →</a>
+            <p class="guarantee">🔒 Biztonságos fizetés Barion-nal</p>
+        </section>
+
+        <!-- FAQ -->
+        <section class="faq">
+            <h2>❓ Gyakori Kérdések</h2>
+            <div class="faq-item">
+                <h3>Mennyi időm van elvégezni?</h3>
+                <p>Korlátlan! Egyszer fizetsz, örökre hozzáférsz. A saját tempódban haladhatsz.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Más eszközön is folytathatom?</h3>
+                <p>Igen! A haladásod a fiókodhoz van kötve, így bármilyen eszközön folytathatod, ahol abbahagytad.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Kell előzetes tudás?</h3>
+                <p>Nem. A tanfolyam az alapoktól indul és mindent elmagyaráz. A fogalmakat kattintható popup-ok magyarázzák.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Ez helyettesíti az ügyvédet?</h3>
+                <p>Nem! A tanfolyam célja, hogy ÉRTSD, amit az ügyvéded mond, és tudj kérdezni. De a konkrét jogi tanácshoz mindig kell szakember.</p>
+            </div>
+        </section>
+
+        <!-- Attribution -->
+        <footer class="attribution">
+            <p>Ez az interaktív tanfolyam a következő könyv alapján készült:</p>
+            <p class="book">"Venture Deals: Be Smarter Than Your Lawyer and Venture Capitalist"</p>
+            <p>Szerzők: Brad Feld & Jason Mendelson</p>
+            <p style="margin-top: 24px; font-size: 11px;">© 2024 Venturesuli (venturesuli.hu) • Az adaptáció oktatási célokat szolgál. Minden jog az eredeti szerzőket illeti.</p>
+        </footer>
+    </div>
+</body>
+</html>

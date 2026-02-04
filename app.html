@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venturesuli - Startup Finanszírozás Tanfolyam</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+/* Reset és alap */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    color: #cbd5e1;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* Loading overlay */
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.loading-overlay.hidden { display: none; }
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid rgba(59, 130, 246, 0.2);
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-overlay p { color: #94a3b8; }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+/* Header */
+header { 
+    background: rgba(30, 41, 59, 0.95);
+    border-bottom: 1px solid #334155;
+    padding: 16px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-content { 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo-icon { font-size: 28px; }
+.logo-text h1 { font-size: 18px; color: #fff; font-weight: 700; }
+.logo-text p { font-size: 12px; color: #64748b; }
+
+.header-right { display: flex; align-items: center; gap: 20px; }
+
+.user-info { display: flex; align-items: center; gap: 10px; }
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+}
+.user-name { font-size: 14px; color: #e2e8f0; }
+
+.logout-btn {
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #94a3b8;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.logout-btn:hover { border-color: #ef4444; color: #ef4444; }
+
+.delete-account-btn {
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid #6b7280;
+    color: #9ca3af;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+.delete-account-btn:hover { border-color: #dc2626; color: #dc2626; background: rgba(220, 38, 38, 0.1); }
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+.modal-content {
+    background: #1e293b;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+    border: 1px solid #334155;
+}
+.modal-icon { font-size: 48px; margin-bottom: 16px; }
+.modal-title { font-size: 24px; font-weight: 700; color: #f1f5f9; margin-bottom: 12px; }
+.modal-text { color: #94a3b8; margin-bottom: 24px; line-height: 1.6; }
+.modal-warning { background: rgba(220, 38, 38, 0.1); border: 1px solid #dc2626; border-radius: 8px; padding: 12px; margin-bottom: 24px; color: #fca5a5; font-size: 14px; }
+.modal-buttons { display: flex; gap: 12px; justify-content: center; }
+.modal-btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.modal-btn-cancel { background: #334155; border: none; color: #e2e8f0; }
+.modal-btn-cancel:hover { background: #475569; }
+.modal-btn-delete { background: #dc2626; border: none; color: white; }
+.modal-btn-delete:hover { background: #b91c1c; }
+.modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.glossary-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.glossary-btn:hover { 
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.progress-container { display: flex; align-items: center; gap: 16px; }
+.progress-info { text-align: right; }
+.progress-info p { font-size: 11px; color: #64748b; }
+.progress-info span { font-size: 14px; color: #fff; font-weight: 600; }
+
+.progress-ring { position: relative; width: 48px; height: 48px; }
+.progress-ring svg { transform: rotate(-90deg); }
+.progress-ring .bg { fill: none; stroke: #334155; stroke-width: 4; }
+.progress-ring .fg { fill: none; stroke: #3b82f6; stroke-width: 4; stroke-linecap: round; transition: stroke-dasharray 0.3s; }
+.progress-text { 
+    position: absolute; 
+    inset: 0; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* Layout */
+.layout { display: flex; gap: 24px; margin-top: 24px; }
+@media (max-width: 900px) { 
+    .layout { flex-direction: column; }
+    .header-right { flex-wrap: wrap; }
+}
+
+/* Sidebar */
+.sidebar { 
+    width: 300px; 
+    flex-shrink: 0;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid #334155;
+    border-radius: 12px;
+    overflow: hidden;
+    height: fit-content;
+    position: sticky;
+    top: 90px;
+}
+@media (max-width: 900px) { .sidebar { width: 100%; position: static; } }
+
+.sidebar-header { 
+    padding: 16px; 
+    border-bottom: 1px solid #334155;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.sidebar-header h2 { font-size: 14px; font-weight: 600; color: #fff; }
+
+.reset-btn { 
+    font-size: 11px; 
+    color: #64748b; 
+    background: none; 
+    border: none; 
+    cursor: pointer;
+}
+.reset-btn:hover { color: #fff; }
+
+.module-list { max-height: 70vh; overflow-y: auto; }
+
+.module-item { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px;
+    padding: 14px 16px;
+    border-left: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.module-item:hover { background: rgba(51, 65, 85, 0.5); }
+.module-item.active { 
+    background: rgba(59, 130, 246, 0.15);
+    border-left-color: #3b82f6;
+}
+.module-item.active .module-title { color: #60a5fa; }
+
+.module-icon { font-size: 22px; width: 28px; text-align: center; }
+.module-info { flex: 1; min-width: 0; }
+.module-title { 
+    font-size: 13px; 
+    font-weight: 500; 
+    color: #e2e8f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.module-meta { font-size: 11px; color: #64748b; margin-top: 2px; }
+.module-check { color: #22c55e; font-size: 16px; }
+
+/* Main Content */
+.main { flex: 1; min-width: 0; }
+
+.card { 
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid #334155;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.module-header { 
+    padding: 28px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.08));
+}
+.module-header-content { display: flex; align-items: center; gap: 20px; }
+.module-header-icon { font-size: 48px; }
+.module-header-text .label { 
+    font-size: 12px; 
+    color: #94a3b8; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+}
+.module-header-text h2 { 
+    font-size: 26px; 
+    color: #fff; 
+    font-weight: 700; 
+    margin-top: 4px; 
+}
+
+.section-nav { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; align-items: center; }
+.section-dot { 
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.section-dot:hover { background: rgba(255, 255, 255, 0.4); }
+.section-dot.active { width: 28px !important; background: #fff; }
+.section-dot:not(.active) { width: 8px; }
+.section-dot.quiz { background: rgba(234, 179, 8, 0.5); }
+.section-dot.quiz.active { background: #eab308; }
+
+/* Content Area */
+.content { padding: 28px; }
+.section-title { font-size: 22px; color: #fff; font-weight: 600; margin-bottom: 20px; }
+.section-body { color: #cbd5e1; font-size: 15px; }
+.section-body p { margin-bottom: 14px; }
+.section-body ul, .section-body ol { margin-left: 24px; margin-bottom: 14px; }
+.section-body li { margin-bottom: 8px; }
+.section-body strong { color: #fff; }
+
+.section-body table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin: 20px 0; 
+    font-size: 14px; 
+}
+.section-body th { 
+    background: #334155; 
+    padding: 12px; 
+    text-align: left; 
+    color: #fff; 
+    font-weight: 600; 
+}
+.section-body td { padding: 12px; border-top: 1px solid #334155; }
+.section-body tr:hover { background: rgba(51, 65, 85, 0.3); }
+
+/* Glossary terms */
+.term { 
+    border-bottom: 1px dashed #60a5fa; 
+    cursor: help;
+    color: #93c5fd;
+    transition: color 0.2s;
+}
+.term:hover { color: #bfdbfe; }
+
+/* Info boxes */
+.tip-box, .warning-box { 
+    display: flex; 
+    gap: 14px; 
+    padding: 18px;
+    border-radius: 10px;
+    margin-top: 24px;
+}
+.tip-box { 
+    background: rgba(34, 197, 94, 0.1); 
+    border: 1px solid rgba(34, 197, 94, 0.3); 
+}
+.tip-box .icon { color: #4ade80; font-size: 20px; }
+.tip-box p { color: #86efac; }
+
+.warning-box { 
+    background: rgba(249, 115, 22, 0.1); 
+    border: 1px solid rgba(249, 115, 22, 0.3); 
+}
+.warning-box .icon { color: #fb923c; font-size: 20px; }
+.warning-box p { color: #fdba74; }
+
+/* Learn More Section */
+.learn-more-section { 
+    margin-top: 28px; 
+    border-top: 1px solid #334155; 
+    padding-top: 24px; 
+}
+
+.learn-more-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 18px 20px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.1));
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 10px;
+    color: #60a5fa;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.learn-more-toggle:hover { 
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(139, 92, 246, 0.15)); 
+}
+.learn-more-toggle .arrow { 
+    margin-left: auto; 
+    transition: transform 0.3s; 
+    font-size: 12px; 
+}
+.learn-more-toggle.open .arrow { transform: rotate(180deg); }
+
+.learn-more-content { display: none; margin-top: 20px; }
+.learn-more-content.open { display: block; }
+
+.detailed-summary {
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.5));
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 32px;
+}
+.detailed-summary h3 { 
+    color: #fff; 
+    font-size: 20px; 
+    margin: 32px 0 16px; 
+    padding-bottom: 8px; 
+    border-bottom: 1px solid #334155; 
+}
+.detailed-summary h3:first-child { margin-top: 0; }
+.detailed-summary h4 { 
+    color: #94a3b8; 
+    font-size: 14px; 
+    margin: 24px 0 12px; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+}
+.detailed-summary p { margin-bottom: 14px; color: #cbd5e1; }
+.detailed-summary ul, .detailed-summary ol { margin-left: 24px; margin-bottom: 16px; }
+.detailed-summary li { margin-bottom: 8px; }
+.detailed-summary strong { color: #fff; }
+.detailed-summary table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin: 16px 0; 
+    font-size: 14px; 
+}
+.detailed-summary th { 
+    background: rgba(0, 0, 0, 0.3); 
+    padding: 12px; 
+    text-align: left; 
+    color: #fff; 
+}
+.detailed-summary td { padding: 12px; border-top: 1px solid #334155; }
+
+/* Calculation boxes */
+.calc-box {
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    border-radius: 10px;
+    padding: 24px;
+    margin: 24px 0;
+}
+.calc-box h5 { 
+    color: #4ade80; 
+    font-size: 16px; 
+    margin-bottom: 16px; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+}
+.calc-box .formula { 
+    background: rgba(0, 0, 0, 0.3); 
+    padding: 16px 20px; 
+    border-radius: 8px; 
+    font-family: 'Courier New', monospace;
+    color: #fbbf24;
+    margin: 12px 0;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+.calc-box .result { 
+    background: rgba(34, 197, 94, 0.15); 
+    padding: 12px 16px; 
+    border-radius: 6px; 
+    color: #86efac;
+    font-weight: 600;
+    margin-top: 12px;
+}
+.calc-box table { background: rgba(0, 0, 0, 0.2); border-radius: 8px; overflow: hidden; }
+.calc-box th { background: rgba(0, 0, 0, 0.3); }
+
+/* Example boxes */
+.example-box {
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    border-radius: 10px;
+    padding: 24px;
+    margin: 24px 0;
+}
+.example-box h5 { color: #60a5fa; font-size: 16px; margin-bottom: 16px; }
+
+/* Key points */
+.key-point { 
+    background: linear-gradient(90deg, rgba(251, 191, 36, 0.1), transparent);
+    border-left: 3px solid #fbbf24;
+    padding: 12px 16px;
+    margin: 16px 0;
+    color: #fef3c7;
+}
+
+/* PDF button */
+.pdf-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 24px;
+}
+.pdf-btn:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); 
+}
+
+/* Navigation Footer */
+.nav-footer { 
+    display: flex; 
+    justify-content: space-between; 
+    padding: 20px 28px;
+    border-top: 1px solid #334155;
+}
+.nav-btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+.nav-btn-secondary { background: transparent; color: #94a3b8; }
+.nav-btn-secondary:hover:not(:disabled) { color: #fff; }
+.nav-btn-secondary:disabled { opacity: 0.3; cursor: not-allowed; }
+.nav-btn-primary { background: #3b82f6; color: #fff; }
+.nav-btn-primary:hover { background: #2563eb; }
+.nav-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Quiz styles */
+.quiz-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 16px; 
+}
+.quiz-header h3 { color: #fff; font-size: 18px; }
+.quiz-header span { color: #94a3b8; font-size: 14px; }
+
+.quiz-progress { 
+    height: 6px; 
+    background: #334155; 
+    border-radius: 3px; 
+    margin-bottom: 24px; 
+    overflow: hidden; 
+}
+.quiz-progress-bar { 
+    height: 100%; 
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6); 
+    transition: width 0.3s; 
+    border-radius: 3px; 
+}
+
+.quiz-question { font-size: 18px; color: #fff; margin: 24px 0; line-height: 1.5; }
+
+.quiz-options { display: flex; flex-direction: column; gap: 12px; }
+.quiz-option {
+    padding: 18px 20px;
+    border: 2px solid #334155;
+    border-radius: 10px;
+    background: rgba(51, 65, 85, 0.3);
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    font-size: 15px;
+}
+.quiz-option:hover:not(:disabled) { 
+    border-color: #475569; 
+    background: rgba(51, 65, 85, 0.5); 
+}
+.quiz-option.selected { 
+    border-color: #3b82f6; 
+    background: rgba(59, 130, 246, 0.15); 
+    color: #93c5fd; 
+}
+.quiz-option.correct { 
+    border-color: #22c55e; 
+    background: rgba(34, 197, 94, 0.15); 
+    color: #86efac; 
+}
+.quiz-option.incorrect { 
+    border-color: #ef4444; 
+    background: rgba(239, 68, 68, 0.15); 
+    color: #fca5a5; 
+}
+.quiz-option:disabled { cursor: default; }
+
+.quiz-feedback { margin-top: 20px; padding: 18px; border-radius: 10px; }
+.quiz-feedback.correct { 
+    background: rgba(34, 197, 94, 0.1); 
+    border: 1px solid rgba(34, 197, 94, 0.3); 
+}
+.quiz-feedback.correct .title { color: #22c55e; font-weight: 600; font-size: 16px; }
+.quiz-feedback.incorrect { 
+    background: rgba(234, 179, 8, 0.1); 
+    border: 1px solid rgba(234, 179, 8, 0.3); 
+}
+.quiz-feedback.incorrect .title { color: #eab308; font-weight: 600; font-size: 16px; }
+.quiz-feedback .explanation { color: #94a3b8; font-size: 14px; margin-top: 8px; }
+
+.quiz-results { text-align: center; padding: 48px 24px; }
+.quiz-results .icon { font-size: 72px; }
+.quiz-results h3 { font-size: 28px; color: #fff; margin-top: 20px; }
+.quiz-results .score { 
+    font-size: 56px; 
+    font-weight: 700; 
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6); 
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent; 
+    background-clip: text;
+    margin: 20px 0; 
+}
+.quiz-results .pct { color: #94a3b8; font-size: 16px; }
+.quiz-results .buttons { display: flex; gap: 16px; justify-content: center; margin-top: 32px; }
+
+/* Completion badge */
+.completion-badge {
+    margin-top: 20px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.completion-badge .icon { font-size: 36px; }
+.completion-badge h4 { color: #22c55e; font-weight: 600; font-size: 16px; }
+.completion-badge p { color: #86efac; font-size: 14px; margin-top: 4px; }
+
+/* Definition popup */
+.definition-popup {
+    position: fixed;
+    z-index: 1000;
+    max-width: 400px;
+    padding: 20px;
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 12px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    animation: popIn 0.2s ease-out;
+}
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.95) translateY(8px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.definition-popup .term-name { color: #60a5fa; font-weight: 600; font-size: 16px; margin-bottom: 10px; }
+.definition-popup .term-def { color: #cbd5e1; font-size: 14px; line-height: 1.6; }
+.definition-popup .close-btn { 
+    position: absolute; 
+    top: 12px; 
+    right: 12px; 
+    background: none; 
+    border: none; 
+    color: #64748b; 
+    cursor: pointer; 
+    font-size: 20px; 
+    line-height: 1; 
+}
+.definition-popup .close-btn:hover { color: #fff; }
+
+/* Grid layouts */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 20px 0; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
+@media (max-width: 700px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+.grid-box { padding: 20px; border-radius: 10px; }
+.grid-box h4 { font-weight: 600; margin-bottom: 10px; font-size: 15px; }
+.grid-box p { font-size: 14px; margin: 0; }
+.grid-box.blue { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); }
+.grid-box.blue h4 { color: #60a5fa; }
+.grid-box.purple { background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); }
+.grid-box.purple h4 { color: #c084fc; }
+.grid-box.green { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); }
+.grid-box.green h4 { color: #4ade80; }
+.grid-box.red { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); }
+.grid-box.red h4 { color: #f87171; }
+.grid-box.yellow { background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); }
+.grid-box.yellow h4 { color: #facc15; }
+.grid-box.orange { background: rgba(249, 115, 22, 0.1); border: 1px solid rgba(249, 115, 22, 0.3); }
+.grid-box.orange h4 { color: #fb923c; }
+
+/* Attribution */
+.attribution {
+    margin-top: 40px;
+    padding: 24px;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid #334155;
+    border-radius: 12px;
+    text-align: center;
+}
+.attribution h4 { color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.attribution p { color: #64748b; font-size: 13px; line-height: 1.6; }
+.attribution a { color: #60a5fa; text-decoration: none; }
+.attribution a:hover { text-decoration: underline; }
+.attribution .book-title { color: #fff; font-weight: 600; font-style: italic; }
+
+/* Utility classes */
+.text-green { color: #4ade80; }
+.text-red { color: #f87171; }
+.text-blue { color: #60a5fa; }
+.text-yellow { color: #facc15; }
+.text-purple { color: #c084fc; }
+.highlight { color: #fbbf24; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>Betöltés...</p>
+    </div>
+
+    <div id="app"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+// ==================== FIREBASE CONFIG ====================
+// FONTOS: Cseréld ki a saját Firebase projekt adataira!
+const firebaseConfig = {
+    apiKey: "AIzaSyCbHoaU_uZrFvZv2W3wMbV3P4FaZLE10Z0",
+    authDomain: "venturesuli.firebaseapp.com",
+    projectId: "venturesuli",
+    storageBucket: "venturesuli.firebasestorage.app",
+    messagingSenderId: "1024393704019",
+    appId: "1:1024393704019:web:6bc49f0b08f83cc05c8ca6",
+    measurementId: "G-5DLZGYLNYB"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// ==================== CURRENT USER ====================
+let currentUser = null;
+let userData = null;
+
+// ==================== GLOSSARY ====================
+const GLOSSARY = {
+    "83(b) election": "IRS form, amit 30 NAPON BELÜL be kell küldeni részvény grant után. Nélküle a vesting alatt szerzett részvények után ordinary income adót fizetsz (akár 37%), míg 83(b)-vel capital gains-t (max 20%). A különbség akár 3×!",
+    "409a valuation": "Független értékelés a common stock fair market value-járól. Szükséges az opciók 'strike price' meghatározásához. Tipikus költség: $5-15K évente.",
+    "accredited investor": "SEC által meghatározott 'sophisticated investor' kategória. Kritériumok: $200K+ éves jövedelem (vagy $300K házaspárként) VAGY $1M+ nettó vagyon (lakás nélkül).",
+    "anti-dilution": "Védelem down round esetén. A korábbi befektetők több részvényt kapnak kompenzációként, hogy részben ellensúlyozzák az értékvesztést.",
+    "asset deal": "Csak bizonyos eszközöket (IP, szerződések, alkalmazottak) vesznek meg, nem az egész céget. A VEVŐ preferálja, mert válogathat és nem örökli a kötelezettségeket.",
+    "batna": "Best Alternative To Negotiated Agreement - a legjobb alternatívád, ha ez a tárgyalás nem sikerül. Minél jobb a BATNA-d, annál erősebb a tárgyalási pozíciód.",
+    "board of directors": "Igazgatótanács, ami a cég stratégiai döntéseit hozza és a CEO-t felügyeli. Tipikus összetétel Series A után: 2 common + 2 preferred + 1 független.",
+    "bridge loan": "Áthidaló kölcsön két finanszírozási kör között, általában convertible note formában. Kockázatos - gyakran azt jelzi, hogy a cég nehézségekkel küzd.",
+    "burn rate": "A havi nettó készpénz felhasználás (kiadások - bevételek). Ha $500K van a bankban és $50K/hó a burn rate, akkor 10 hónap a runway.",
+    "cap table": "Capitalization table - táblázat, ami részletesen megmutatja ki hány részvényt és milyen típusú részvényt birtokol, milyen árfolyamon.",
+    "carried interest": "A profit ~20%-a, amit a GP-k (VC partnerek) kapnak sikeres exitek után, DE csak miután az LP-k visszakapták a teljes tőkéjüket. Ez a fő motiváció!",
+    "convertible note": "Kölcsön, ami később (tipikusan a következő equity körnél) részvénnyé alakul, általában 10-25% kedvezménnyel és/vagy értékelési cap-pel.",
+    "dilution": "Hígulás - a meglévő tulajdonosok százalékos részesedésének csökkenése új részvények kibocsátásakor.",
+    "double trigger acceleration": "KÉT esemény kell a gyorsított vestinghez: (1) akvizíció ÉS (2) elbocsátás vagy pozícióváltozás. Ez a standard és fair megoldás.",
+    "down round": "Finanszírozási kör alacsonyabb értékeléssel, mint az előző. Rossz jel, de nem végzetes. Triggereli az anti-dilution védelmet.",
+    "drag-along": "Jog, ami lehetővé teszi a többségi tulajdonosoknak, hogy kényszerítsék a kisebbségieket a részvények eladására ugyanolyan feltételekkel.",
+    "drag-along rights": "Jog, ami lehetővé teszi a többségi tulajdonosoknak, hogy kényszerítsék a kisebbségieket a részvények eladására ugyanolyan feltételekkel.",
+    "earn-out": "Feltételes fizetés bizonyos célok (bevétel, profit, felhasználók) eléréséhez kötve az akvizíció után. FIGYELEM: statisztikailag az earn-out-ok nagy része NEM teljesül!",
+    "escrow": "A vételár egy része (tipikusan 10-20%), amit visszatartanak 12-24 hónapig esetleges problémák fedezésére.",
+    "fiduciary duty": "Bizalmi kötelezettség - a board tagok kötelessége a részvényesek legjobb érdekében cselekedni. Jogilag kikényszeríthető.",
+    "full ratchet": "A legagresszívebb anti-dilution forma. Down round esetén a korábbi befektetők részvényára TELJESEN lecsökken az új árra. KERÜLENDŐ!",
+    "letter of intent": "Akvizíció első hivatalos lépése. A legtöbb pont NEM kötelező érvényű, kivétel: titoktartás, exkluzivitás, költségek.",
+    "loi": "Letter of Intent - Akvizíció első hivatalos lépése. A legtöbb pont NEM kötelező érvényű, kivétel: titoktartás, exkluzivitás, költségek.",
+    "limited partnership": "LP struktúra: Limited Partners (passzív befektetők) + General Partners (aktív kezelők). Az LP-k korlátozott felelősséggel bírnak.",
+    "liquidation preference": "Exit esetén a befektetők először kapják vissza befektetésüket (vagy annak többszörösét), mielőtt bárki más pénzt látna.",
+    "management fee": "Éves díj az alap kezeléséért, tipikusan 1.5-2.5% az alap méretéből. Egy $200M alapnál ez $3-5M/év.",
+    "micro vc": "Kis méretű VC alap ($25-100M), ami gyakran egy super angel-ből nőtt ki. Fiduciáros kötelezettsége van az LP-k felé.",
+    "no-shop clause": "Exkluzivitási záradék (tipikusan 45-60 nap), ami megtiltja más befektetőkkel való tárgyalást a term sheet aláírása után.",
+    "non-participating preferred": "A VC VÁLASZT: liquidation preference VAGY tulajdoni arány szerinti részesedés (konverzió common-ra). Ez a vállalkozóbarát változat.",
+    "option pool": "Jövőbeli alkalmazottaknak fenntartott részvények. Általában 15-25% post-money alapon. FONTOS: az option pool növelése pre-money alapon történik!",
+    "participating preferred": "A VC először megkapja a liquidation preference-t, AZTÁN még részesedik is a maradékból. 'Double dip' - kétszer kap. Kerülendő!",
+    "pay-to-play": "Ha a befektető NEM vesz részt a következő körben arányosan, elveszíti a preferred jogait (részvényei common-ra konvertálódnak). JÓ neked!",
+    "post-money valuation": "A cég értékelése a befektetés UTÁN, tartalmazza a befektetett összeget is. Post-money = Pre-money + Befektetés.",
+    "pre-money valuation": "A cég értékelése a befektetés ELŐTT. Ha $20M pre-money és $5M befektetés, akkor a post-money $25M, és a VC 20%-ot kap.",
+    "pro rata rights": "Arányos jog a következő körökben való részvételre. Lehetővé teszi a befektetőnek, hogy megtartsa a tulajdoni arányát.",
+    "protective provisions": "Befektetői vétójogok bizonyos kritikus döntésekre: cég eladása, új részvényosztály, alapító okirat módosítás, hitelfelvétel limit felett.",
+    "qualified ipo": "IPO ami elér bizonyos küszöböt (pl. $50M+ és meghatározott részvényár), és automatikusan triggereli a preferred→common konverziót.",
+    "runway": "Hány hónapig elég a pénz a jelenlegi burn rate mellett. Számítás: Készpénz / Havi Burn Rate. Minimum 6 hónap runway-ed legyen!",
+    "series a": "Az első jelentős VC finanszírozási kör, tipikusan $2-15M, intézményi befektetőktől. Ez az első 'priced round'.",
+    "single trigger acceleration": "Egyetlen esemény (tipikusan akvizíció) automatikusan vest-eli az összes részvényt. Ritka és nem ajánlott.",
+    "stock deal": "Az egész céget (minden részvényt) megveszik. Az ELADÓ preferálja, mert tiszta exit - minden kötelezettség átmegy a vevőre.",
+    "super angel": "Tapasztalt, sikeres vállalkozó, aki rendszeresen (évente 5-20×) befektet korai fázisú startupokba saját pénzéből. Tipikus befektetés: $25K-$500K.",
+    "term sheet": "Nem kötelező érvényű dokumentum, ami összefoglalja a befektetés fő feltételeit. Kivételek: no-shop záradék, titoktartás, jogi költségek.",
+    "vesting": "A részvények fokozatos megszerzése idővel. Standard: 4 év időtartam, 1 év cliff. Biztosítja a hosszú távú elköteleződést.",
+    "weighted average": "A fair anti-dilution forma. Figyelembe veszi az új kör méretét is a korrekció számításánál. A 'broad-based' a standard.",
+    "weighted average anti-dilution": "A fair anti-dilution forma. Figyelembe veszi az új kör méretét is a korrekció számításánál. A 'broad-based' a standard."
+};
+
+// ==================== MODULES - 13 FEJEZET ====================
+const MODULES = [
+    // ==================== MODUL 1: SZEREPLŐK ÉS ÖKOSZISZTÉMA ====================
+    {
+        id: 1,
+        title: "A Szereplők és az Ökoszisztéma",
+        icon: "👥",
+        time: "30 perc",
+        sections: [
+            {
+                title: "A Vállalkozó Szerepe",
+                content: `<p>A venture capital ökoszisztémában a <strong>vállalkozó az abszolút középpont</strong>. Bár a VC-k professzionális befektetők, a finanszírozási tárgyalás végső felelőssége mindig a vállalkozóé.</p>
+                <p>Értened kell, mit csinálnak a nevedben, és képesnek kell lenned ellenőrizni a munkájukat.</p>`,
+                tip: "A vállalkozónak értenie KELL a finanszírozási feltételeket. Ne delegáld az ügyvédekre!"
+            },
+            {
+                title: "A Társalapítók és Vesting",
+                content: `<p>A társalapítók közötti viszony idővel változhat. Ezért létezik a <span class="term" data-term="vesting">vesting</span>.</p>
+                <div class="calc-box">
+                    <h5>🧮 Standard Vesting</h5>
+                    <div class="formula">4 év időtartam, 1 év cliff, havi vesting utána
+Cliff után: Teljes × 75% ÷ 36 = havi vesting</div>
+                </div>`,
+                warning: "Ha a CTO 18 hónap után távozik: csak a vest-elt részvényeket viszi, a többi visszamegy a céghez!"
+            },
+            {
+                title: "A VC Hierarchia",
+                content: `<table>
+                    <thead><tr><th>Pozíció</th><th>Döntési jog</th><th>Feladat</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Managing Director / GP</strong></td><td class="text-green">TELJES</td><td>Befektetési döntések, board tagság</td></tr>
+                        <tr><td><strong>Principal / Director</strong></td><td class="text-yellow">Korlátozott</td><td>Deal-ek vezetése, de nem dönt egyedül</td></tr>
+                        <tr><td><strong>Associate</strong></td><td class="text-red">NINCS</td><td>Deal sourcing, due diligence</td></tr>
+                        <tr><td><strong>Analyst</strong></td><td class="text-red">NINCS</td><td>Piackutatás, memo írás</td></tr>
+                    </tbody>
+                </table>`,
+                warning: "Ha Associate-tel beszélsz, ő csak információt gyűjt - a döntést a Managing Director hozza!"
+            },
+            {
+                title: "Angyal Befektetők és Ügyvédek",
+                content: `<div class="grid-2">
+                    <div class="grid-box blue">
+                        <h4>🦸 <span class="term" data-term="super angel">Super Angel</span></h4>
+                        <p>Sikeres vállalkozók, évente 5-20 deal, $25K-$500K befektetés.</p>
+                    </div>
+                    <div class="grid-box purple">
+                        <h4>💼 <span class="term" data-term="micro vc">Micro VC</span></h4>
+                        <p>Super angel, aki már mások pénzét is kezeli. Fiduciáros kötelezettség!</p>
+                    </div>
+                </div>`,
+                tip: "SOHA ne kérd a VC-t, hogy ajánljon ügyvédet! Érdekellentét."
+            }
+        ],
+        quiz: [
+            { q: "Ki hozza a végső befektetési döntéseket egy VC cégnél?", o: ["Associate", "Principal", "Managing Director / GP", "Analyst"], a: 2, e: "A Managing Director vagy General Partner rendelkezik teljes döntési jogkörrel." },
+            { q: "Mi a fő különbség a super angel és micro VC között?", o: ["A befektetés mérete", "A micro VC mások pénzét is kezeli", "Nincs különbség", "A micro VC csak tech cégekbe fektet"], a: 1, e: "A micro VC már alapot kezel és mások pénzét is befekteti, fiduciáros felelősséggel." },
+            { q: "Kérheted-e a VC-t, hogy ajánljon neked ügyvédet?", o: ["Igen, ők ismerik a jókat", "NEM - ez érdekellentét", "Csak Series A-nál", "Mindegy"], a: 1, e: "A VC által ajánlott ügyvéd a VC érdekeit képviseli, nem a tiédet." }
+        ],
+        detailed: `<h3>A Vállalkozó Szerepe</h3>
+<p>A venture capital ökoszisztémában a <strong>vállalkozó az abszolút középpont</strong>. Bár a VC-k professzionális befektetők több évtizedes tapasztalattal, és az ügyvédek jogi szakértők, a finanszírozási tárgyalás végső felelőssége mindig a vállalkozóé.</p>
+<p>Ez nem azt jelenti, hogy ne használj szakértőket - épp ellenkezőleg. De <strong>értened kell, mit csinálnak a nevedben</strong>, és képesnek kell lenned ellenőrizni a munkájukat. Egy rossz ügyvédi tanács vagy egy félreértett feltétel évekre megkeserítheti az életed.</p>
+
+<h3>A Társalapítók Dinamikája</h3>
+<p>Az egyik legkényesebb téma a társalapítók közötti viszony. A kezdeti lelkesedés idővel csökken, az élethelyzetek változnak, és ami kezdetben fair-nek tűnt, később igazságtalannak érezhető. Ezért létezik a <span class="term" data-term="vesting">vesting</span>.</p>
+
+<div class="calc-box">
+<h5>🧮 Vesting Számítási Példa</h5>
+<p><strong>Standard vesting struktúra:</strong> 4 év, 1 év cliff, havi vesting utána</p>
+<p>Példa: 3 társalapító, 1,000,000 részvény összesen</p>
+<table>
+<thead><tr><th>Alapító</th><th>Kezdeti %</th><th>Részvény</th><th>6 hó után</th><th>1 év után</th><th>4 év után</th></tr></thead>
+<tbody>
+<tr><td>CEO</td><td>50%</td><td>500,000</td><td class="text-red">0 (cliff!)</td><td>125,000</td><td>500,000</td></tr>
+<tr><td>CTO</td><td>30%</td><td>300,000</td><td class="text-red">0 (cliff!)</td><td>75,000</td><td>300,000</td></tr>
+<tr><td>COO</td><td>20%</td><td>200,000</td><td class="text-red">0 (cliff!)</td><td>50,000</td><td>200,000</td></tr>
+</tbody>
+</table>
+<div class="formula">Cliff után havi vesting = Teljes részvény × 75% / 36 hónap
+Pl. CEO: 500,000 × 0.75 / 36 = 10,416 részvény / hónap</div>
+<div class="result">Ha a CTO 18 hónap után távozik: 75,000 + (6 × 6,250) = 112,500 részvény vest, 187,500 visszamegy a céghez!</div>
+</div>
+
+<h3>A VC Cég Felépítése</h3>
+<p>A VC cégek hierarchikusak. <strong>Nagyon fontos tudni, kivel beszélsz</strong>, mert ez meghatározza, milyen fázisban van a deal.</p>
+<table>
+<thead><tr><th>Pozíció</th><th>Döntési jog</th><th>Feladat</th></tr></thead>
+<tbody>
+<tr><td><strong>Managing Director / GP</strong></td><td class="text-green">TELJES</td><td>Befektetési döntések, board tagság</td></tr>
+<tr><td><strong>Principal / Director</strong></td><td class="text-yellow">Korlátozott</td><td>Deal-ek vezetése, de nem dönt egyedül</td></tr>
+<tr><td><strong>Associate</strong></td><td class="text-red">NINCS</td><td>Deal sourcing, due diligence</td></tr>
+<tr><td><strong>Analyst</strong></td><td class="text-red">NINCS</td><td>Piackutatás, memo írás</td></tr>
+</tbody>
+</table>
+<div class="key-point">⚠️ <strong>FONTOS:</strong> Ha Associate-tel beszélsz, ő csak információt gyűjt - a döntést a Managing Director hozza!</div>
+
+<h3>Angyal Befektetők</h3>
+<p>Az angyal befektetők egyéni befektetők, akik saját pénzükből fektetnek korai fázisú cégekbe.</p>
+<div class="grid-2">
+<div class="grid-box blue">
+<h4>🦸 Super Angel</h4>
+<p>Sikeres vállalkozók, akik rendszeresen befektetnek startupokba (évente 5-20 deal). Általában $25K-$500K közötti összegeket fektetnek be. <strong>Értékük nem csak a pénz, hanem a tapasztalat és a network.</strong></p>
+</div>
+<div class="grid-box purple">
+<h4>💼 Micro VC</h4>
+<p>Amikor egy super angel más befektetők pénzét is elkezdi kezelni, micro VC-vé válik. Ez fontos különbség, mert a micro VC-nek <strong>fiduciáros kötelezettsége</strong> van az LP-i felé.</p>
+</div>
+</div>
+
+<h3>Az Ügyvéd Kiválasztása</h3>
+<p><strong>Amit keresned kell:</strong></p>
+<ul>
+<li>VC finanszírozási tapasztalat (nem általános cégjog!)</li>
+<li>Helyi/regionális jelenlét</li>
+<li>Referenciák más vállalkozóktól</li>
+<li>Hajlandóság deferred fee-re (fizetés a záráskor)</li>
+</ul>
+<div class="key-point">⚠️ <strong>SOHA ne kérd a VC-t, hogy ajánljon ügyvédet!</strong> A VC által ajánlott ügyvéd a VC érdekeit fogja képviselni, nem a tiédet. Ez érdekellentét.</div>`
+    },
+    // ==================== MODUL 2: HOGYAN SZEREZZ TŐKÉT ====================
+    {
+        id: 2,
+        title: "Hogyan Szerezz Tőkét",
+        icon: "🎯",
+        time: "25 perc",
+        sections: [
+            {
+                title: "A Yoda Szabály",
+                content: `<p class="highlight" style="font-size: 20px; text-align: center; padding: 16px 0;">"Do or do not; there is no try." - Yoda</p>
+                <p>Ha azt mondod <em>"próbálok tőkét szerezni"</em>, ez jelzi, hogy nem vagy sikeres. <strong>Indulj a siker feltételezésével!</strong></p>`,
+                tip: "Ne mondd: 'Tőkét keresünk.' Mondd: '$2 milliót gyűjtünk a Series A MVP eléréséhez.'"
+            },
+            {
+                title: "Mennyi Tőkét Szerezz?",
+                content: `<ol>
+                    <li>Határozd meg a következő mérföldkövet</li>
+                    <li>Becsüld meg a <span class="term" data-term="burn rate">burn rate</span>-et</li>
+                    <li>Adj hozzá 50% időpuffert</li>
+                </ol>
+                <div class="calc-box">
+                    <h5>🧮 Tőkeigény Számítás</h5>
+                    <div class="formula">12 hó × $70K burn × 1.5 = $1.26M → $1.3M</div>
+                </div>`,
+                warning: "NE adj meg tartományt! '$5-7 millió' = 'Nem tudom, mennyi kell'. Mondj EGY számot!"
+            },
+            {
+                title: "A VC Döntési Kategóriák",
+                content: `<table>
+                    <thead><tr><th>Kategória</th><th>Viselkedés</th><th>Teendő</th></tr></thead>
+                    <tbody>
+                        <tr><td class="text-green"><strong>LEADER</strong></td><td>Aktívan érdeklődik</td><td>Agresszíven kövesd!</td></tr>
+                        <tr><td class="text-red"><strong>PASS</strong></td><td>Nemet mondott</td><td>Ne pazarold az időd</td></tr>
+                        <tr><td class="text-yellow"><strong>MAYBE</strong></td><td>Érdeklődik, de nem lép</td><td>Tartsd melegen</td></tr>
+                        <tr><td class="text-red"><strong>SLOW NO</strong></td><td>Soha nem mond nemet</td><td>Kezeld NEM-ként!</td></tr>
+                    </tbody>
+                </table>`,
+                warning: "A 'slow no' a legveszélyesebb! Soha nem utasít el, de végtelen időt pazarolhatsz rá."
+            },
+            {
+                title: "NE Kérj NDA-t!",
+                content: `<p><strong>Soha ne kérj titoktartási megállapodást (NDA) egy VC-től!</strong></p>
+                <ul>
+                    <li>A VC-k rengeteg hasonló céget látnak</li>
+                    <li>Az ötlet végrehajtása számít, nem maga az ötlet</li>
+                    <li>A VC iparág kis világ - a rossz hírnév gyorsan terjed</li>
+                </ul>`,
+                tip: "Ha passzolnak, kérd meg őket, hogy mondják el MIÉRT. Ez értékes visszajelzés!"
+            }
+        ],
+        quiz: [
+            { q: "Mi a 'slow no' viselkedés?", o: ["Azonnal nemet mond", "Soha nem mond nemet, de semmi nem mozdul", "Lassan befektet", "Kis összegeket fektet"], a: 1, e: "A 'slow no' soha nem utasít el nyíltan, de nem halad előre - végtelen időt pazarolhatsz rá." },
+            { q: "Miért rossz tartományt megadni a tőkeigénynél?", o: ["Túl sok pénz", "Bizonytalanságot sugall", "A VC-k nem értik", "Jogi probléma"], a: 1, e: "A tartomány azt sugallja, nem gondoltad végig, mennyi kell valójában." },
+            { q: "Kérhetsz-e NDA-t egy VC-től?", o: ["Igen, mindig", "NEM - amatőrt jelez", "Csak seed fázisnál", "Csak nagy összegnél"], a: 1, e: "NDA kérése amatőrt jelez. A VC-k rengeteg hasonló céget látnak, nem tudnának működni NDA-kkal." }
+        ],
+        detailed: `<h3>A Yoda Szabály</h3>
+<p class="highlight" style="font-size: 20px; text-align: center; padding: 20px;">"Do or do not; there is no try." - Yoda</p>
+<p>Ha azt mondod <em>'próbálok tőkét szerezni'</em> vagy <em>'tesztelem a vizeket'</em>, ez jelzi, hogy nem vagy sikeres. <strong>Indulj a siker feltételezésével!</strong> A bizonytalanság érezhető - a befektetők megérzik, ha nem vagy magabiztos.</p>
+<div class="key-point">💡 <strong>Ne mondd:</strong> 'Tőkét keresünk.' <strong>Mondd:</strong> '$2 milliót gyűjtünk a Series A MVP eléréséhez.'</div>
+
+<h3>Mennyi Tőkét Szerezz?</h3>
+<p>Ne bonyolult modellekkel számolj - azok MINDIG hibásak! Egyszerű módszer:</p>
+<ol>
+<li>Határozd meg a következő mérföldkövet</li>
+<li>Becsüld meg a havi költést (<span class="term" data-term="burn rate">burn rate</span>)</li>
+<li>Adj hozzá 50% időpuffert</li>
+</ol>
+
+<div class="calc-box">
+<h5>🧮 Tőkeigény Számítási Példa</h5>
+<table>
+<thead><tr><th>Költségelem</th><th>Havi költség</th><th>Megjegyzés</th></tr></thead>
+<tbody>
+<tr><td>Alapítók fizetése (3 fő)</td><td>$30,000</td><td>$10K/fő, piac alatt</td></tr>
+<tr><td>Fejlesztők (2 fő)</td><td>$24,000</td><td>$12K/fő</td></tr>
+<tr><td>Infrastruktúra (AWS)</td><td>$3,000</td><td>Skálázódik</td></tr>
+<tr><td>Iroda + egyéb</td><td>$5,000</td><td>Coworking</td></tr>
+<tr><td>Marketing/Sales</td><td>$8,000</td><td>Kezdeti tesztek</td></tr>
+<tr><td><strong>ÖSSZESEN</strong></td><td><strong>$70,000</strong></td><td>Havi burn rate</td></tr>
+</tbody>
+</table>
+<div class="formula">Becsült idő $100K ARR-ig: 12 hónap
+Alap tőkeigény: 12 × $70,000 = $840,000
+50% puffer: $840,000 × 1.5 = $1,260,000</div>
+<div class="result">Kerekített tőkeigény: $1.3M vagy $1.5M (EGY konkrét szám, nem tartomány!)</div>
+</div>
+
+<div class="key-point">⚠️ <strong>NE adj meg tartományt!</strong> '$5-7 millió' = 'Nem tudom, mennyi kell'. Mondj EGY konkrét számot!</div>
+
+<h3>A VC Döntési Kategóriák</h3>
+<table>
+<thead><tr><th>Kategória</th><th>Viselkedés</th><th>Teendő</th></tr></thead>
+<tbody>
+<tr><td class="text-green"><strong>1. LEADER</strong></td><td>Egyértelműen érdeklődik, aktívan kérdez</td><td>Agresszíven kövesd!</td></tr>
+<tr><td class="text-red"><strong>2. PASS</strong></td><td>Egyértelműen nemet mondott</td><td>Ne pazarold az időd</td></tr>
+<tr><td class="text-yellow"><strong>3. MAYBE</strong></td><td>Érdeklődik, de nem lép előre</td><td>Tartsd melegen, de ne függj tőle</td></tr>
+<tr><td class="text-red"><strong>4. SLOW NO</strong></td><td>Soha nem mond nemet, semmi nem mozdul</td><td>Kezeld NEM-ként! Állíts határidőt</td></tr>
+</tbody>
+</table>
+<div class="key-point">⚠️ A <strong>'slow no' a legveszélyesebb!</strong> Soha nem utasít el nyíltan, de végtelen időt pazarolhatsz rá.</div>
+
+<h3>NE Kérj NDA-t!</h3>
+<p><strong>Soha ne kérj titoktartási megállapodást (NDA) egy VC-től!</strong></p>
+<ul>
+<li>A VC-k rengeteg hasonló céget látnak - ha mindenkinek NDA-t írnának alá, nem tudnának működni</li>
+<li>NDA blokkolná őket abban, hogy más befektetőkkel beszéljenek rólad</li>
+<li>Az ötlet végrehajtása számít, nem maga az ötlet</li>
+<li>A VC iparág kis világ - a rossz hírnév gyorsan terjed</li>
+</ul>
+<div class="key-point">💡 Ha passzolnak, kérd meg őket, hogy mondják el MIÉRT. Ez az egyik legértékesebb visszajelzés!</div>
+
+<h3>A Helyes Megközelítés</h3>
+<div class="example-box">
+<h5>✓ Amit csinálj:</h5>
+<ul>
+<li>Építs kapcsolatokat MIELŐTT pénzre lenne szükséged</li>
+<li>Kérj bemutatást más vállalkozóktól</li>
+<li>Légy felkészült és professzionális</li>
+<li>Ismerd a VC portfólióját - ne pitch-elj konkurens cég befektetőknek</li>
+<li>Kövess fel gyorsan, de ne légy tolakodó</li>
+</ul>
+</div>
+<div class="key-point">💡 A legjobb befektetők azokba a cégekbe fektetnek, akiket már ismernek. <strong>Építs kapcsolatot előre!</strong></div>`
+    },
+    // ==================== MODUL 3: GAZDASÁGI FELTÉTELEK ====================
+    {
+        id: 3,
+        title: "Gazdasági Feltételek",
+        icon: "💰",
+        time: "35 perc",
+        sections: [
+            {
+                title: "A Két Legfontosabb Dolog",
+                content: `<div class="grid-2">
+                    <div class="grid-box blue" style="text-align: center; padding: 28px;">
+                        <h4 style="font-size: 32px;">💰</h4>
+                        <h4>ECONOMICS</h4>
+                    </div>
+                    <div class="grid-box purple" style="text-align: center; padding: 28px;">
+                        <h4 style="font-size: 32px;">🎛️</h4>
+                        <h4>CONTROL</h4>
+                    </div>
+                </div>`,
+                tip: "Fókuszálj erre a kettőre, minden más másodlagos!"
+            },
+            {
+                title: "Pre vs Post-money CSAPDA",
+                content: `<p>$5M befektetés "$20M értékelésnél" - de melyik?</p>
+                <div class="grid-2">
+                    <div class="grid-box blue">
+                        <h4>$20M PRE-money</h4>
+                        <p class="text-green">→ VC kap 20%</p>
+                    </div>
+                    <div class="grid-box purple">
+                        <h4>$20M POST-money</h4>
+                        <p class="text-red">→ VC kap 25%</p>
+                    </div>
+                </div>`,
+                warning: "Mindig kérdezz rá: 'Ez PRE-money, ugye?'"
+            },
+            {
+                title: "Liquidation Preference",
+                content: `<table>
+                    <thead><tr><th>Típus</th><th>Neked</th></tr></thead>
+                    <tbody>
+                        <tr><td><span class="term" data-term="non-participating preferred">1× Non-participating</span></td><td class="text-green">LEGJOBB</td></tr>
+                        <tr><td><span class="term" data-term="participating preferred">1× Participating</span></td><td class="text-red">ROSSZ</td></tr>
+                        <tr><td>2× Participating</td><td class="text-red">NAGYON ROSSZ</td></tr>
+                    </tbody>
+                </table>`,
+                warning: "A participating preferred esetén a VC kétszer kap!"
+            }
+        ],
+        quiz: [
+            { q: "$5M befektetés $20M POST-money-nál. Hány % a VC?", o: ["20%", "25%", "33%", "40%"], a: 1, e: "$5M / $20M = 25%" },
+            { q: "Melyik anti-dilution a standard?", o: ["Full ratchet", "Narrow-based", "Broad-based weighted avg", "Nincs"], a: 2, e: "A broad-based weighted average a legigazságosabb." }
+        ],
+        detailed: `<h3>A Két Legfontosabb Dolog</h3>
+<p>A <span class="term" data-term="term sheet">term sheet</span>-ben csak <strong>KÉT dolog számít igazán:</strong></p>
+<div class="grid-2">
+<div class="grid-box blue" style="text-align: center; padding: 30px;">
+<h4 style="font-size: 40px; margin-bottom: 10px;">💰</h4>
+<h4>ECONOMICS</h4>
+<p>Gazdasági feltételek: ki kap mennyit</p>
+</div>
+<div class="grid-box purple" style="text-align: center; padding: 30px;">
+<h4 style="font-size: 40px; margin-bottom: 10px;">🎛️</h4>
+<h4>CONTROL</h4>
+<p>Irányítás: ki dönt miről</p>
+</div>
+</div>
+<div class="key-point">💡 Minden más másodlagos. Ha a VC más pontokon akad fenn, valószínűleg blöfföl.</div>
+
+<h3>Pre-money vs Post-money CSAPDA</h3>
+<p>Ez az egyik <strong>leggyakoribb félreértés</strong>. A különbség óriási hatással lehet a tulajdonosi arányokra!</p>
+
+<div class="calc-box">
+<h5>🧮 Pre vs Post-money Számítás</h5>
+<table>
+<thead><tr><th>Értelmezés</th><th>Pre-money</th><th>Post-money</th><th>VC %</th><th>Alapító %</th></tr></thead>
+<tbody>
+<tr><td>$20M <strong>PRE</strong>-money</td><td>$20M</td><td>$25M</td><td class="text-green">20%</td><td class="text-green">80%</td></tr>
+<tr><td>$20M <strong>POST</strong>-money</td><td>$15M</td><td>$20M</td><td class="text-red">25%</td><td class="text-red">75%</td></tr>
+</tbody>
+</table>
+<div class="formula">PRE-money esetén: VC% = $5M / ($20M + $5M) = 20%
+POST-money esetén: VC% = $5M / $20M = 25%</div>
+<div class="result">Különbség: 5 százalékpont = JELENTŐS!
+Ha az alapítónak 80% helyett 75%-a van: $100M exit-nél $5M különbség!</div>
+</div>
+<div class="key-point">⚠️ <strong>Mindig kérdezz rá: '$20 millió PRE-money, ugye?'</strong> Ha a VC habozik, valószínűleg post-money-ra gondolt!</div>
+
+<h3>Az Option Pool Csapda</h3>
+<p>Az <span class="term" data-term="option pool">option pool</span> növelése <strong>PRE-MONEY alapon csökkenti a tényleges értékelést!</strong></p>
+
+<div class="calc-box">
+<h5>🧮 Option Pool Hatása</h5>
+<table>
+<thead><tr><th>Elem</th><th>Option pool NÉLKÜL</th><th>20% Option pool-lal</th></tr></thead>
+<tbody>
+<tr><td>Post-money</td><td>$25M</td><td>$25M</td></tr>
+<tr><td>VC tulajdon</td><td>20%</td><td>20%</td></tr>
+<tr><td>Option pool</td><td>10%</td><td>20%</td></tr>
+<tr><td><strong>ALAPÍTÓK</strong></td><td class="text-green"><strong>70%</strong></td><td class="text-red"><strong>60%</strong></td></tr>
+</tbody>
+</table>
+<div class="result">Az extra 10% option pool AZ ALAPÍTÓKTÓL jön, nem a VC-től!
+Effektív pre-money: $20M - ($25M × 10%) = $17.5M
+Valódi hígulás: 70% → 60% = 10 százalékpont!</div>
+</div>
+<div class="key-point">💡 <strong>Készíts option budget-et:</strong> listázd a tervezett felvételeket. Ezzel érvelhetsz kisebb pool mellett.</div>
+
+<h3>Liquidation Preference</h3>
+<p>A <span class="term" data-term="liquidation preference">liquidation preference</span> meghatározza, ki kap pénzt először egy exit-nél.</p>
+<table>
+<thead><tr><th>Típus</th><th>Mit jelent</th><th>Neked</th></tr></thead>
+<tbody>
+<tr><td><span class="term" data-term="non-participating preferred">1× Non-participating</span></td><td>VC választ: preference VAGY %-os részesedés</td><td class="text-green"><strong>LEGJOBB</strong></td></tr>
+<tr><td>1× Capped participating</td><td>Preference + részesedés, de van maximum</td><td class="text-yellow">Közepes</td></tr>
+<tr><td><span class="term" data-term="participating preferred">1× Full participating</span></td><td>Preference + korlátlan részesedés</td><td class="text-red"><strong>ROSSZ</strong></td></tr>
+<tr><td>2×+ participating</td><td>Kétszeres visszafizetés + részesedés</td><td class="text-red"><strong>NAGYON ROSSZ</strong></td></tr>
+</tbody>
+</table>
+
+<div class="calc-box">
+<h5>🧮 Liquidation Preference Számítási Példa</h5>
+<p>Kiindulás: $5M befektetés, 33% VC tulajdon | Exit: $30M (sikeres)</p>
+<table>
+<thead><tr><th>Struktúra</th><th>VC kap</th><th>Alapítók kapnak</th></tr></thead>
+<tbody>
+<tr><td>1× Non-participating</td><td>$10M (33%)</td><td class="text-green">$20M</td></tr>
+<tr><td>1× Full participating</td><td>$13.3M</td><td class="text-yellow">$16.7M</td></tr>
+<tr><td>2× Full participating</td><td>$18.3M</td><td class="text-red">$11.7M</td></tr>
+</tbody>
+</table>
+<div class="formula">1× Non-participating: VC = MAX(Preference, %-os részesedés)
+1× Participating: VC = Preference + %-os részesedés a MARADÉKBÓL
+2× Participating: VC = 2×Preference + %-os részesedés a MARADÉKBÓL</div>
+</div>
+
+<h3>Anti-dilution Védelem</h3>
+<p>Az <span class="term" data-term="anti-dilution">anti-dilution</span> védelem akkor lép életbe, ha <span class="term" data-term="down round">down round</span>-ot csinálsz.</p>
+
+<div class="calc-box">
+<h5>🧮 Full Ratchet vs Weighted Average</h5>
+<p>Series A: $2M @ $10/részvény = 200,000 részvény a VC-nek<br>Series B (down round): $3M @ $5/részvény</p>
+<table>
+<thead><tr><th>Típus</th><th>Működés</th><th>VC új részvényszám</th><th>Változás</th></tr></thead>
+<tbody>
+<tr><td><span class="term" data-term="full ratchet">Full Ratchet</span></td><td>Régi ár TELJESEN lecsökken</td><td>400,000</td><td class="text-red">+100%</td></tr>
+<tr><td><span class="term" data-term="weighted average">Weighted Average</span></td><td>Figyelembe veszi a kör méretét</td><td>246,154</td><td class="text-green">+23%</td></tr>
+</tbody>
+</table>
+<div class="result">A Full ratchet DUPLÁZZA a VC részvényeit ingyen! A Weighted average fair kompenzációt ad.</div>
+</div>
+
+<h3>Pay-to-Play</h3>
+<p>A <span class="term" data-term="pay-to-play">pay-to-play</span> kikényszeríti, hogy a befektetők részt vegyenek a következő körökben. Ha nem vesznek részt:</p>
+<ul>
+<li>Preferred részvények common-ra konvertálódnak</li>
+<li>Elveszítik a liquidation preference-t</li>
+<li>Elveszítik az anti-dilution védelmet</li>
+</ul>
+<div class="key-point">💡 <strong>A pay-to-play JÓ neked!</strong> Biztosítja, hogy a befektetők ne csak a jó időkben támogassanak, hanem nehéz helyzetben is melletted álljanak.</div>
+
+<h3>Cap Table (Tőkésítési Táblázat)</h3>
+<p>A <span class="term" data-term="cap table">cap table</span> megmutatja a cég teljes tulajdonosi struktúráját.</p>
+<div class="calc-box">
+<h5>🧮 Cap Table Példa</h5>
+<p>$5M befektetés, $20M pre-money, 20% option pool (post-money)</p>
+<table>
+<thead><tr><th>Tulajdonos</th><th>Részvények</th><th>Tulajdon %</th><th>Érték</th></tr></thead>
+<tbody>
+<tr><td>Alapítók</td><td>4,000,000</td><td>46.67%</td><td>$11.67M</td></tr>
+<tr><td>Option Pool</td><td>2,000,000</td><td>20.00%</td><td>$5.00M</td></tr>
+<tr><td>Existing Angels</td><td>666,667</td><td>6.67%</td><td>$1.67M</td></tr>
+<tr><td>Series A VC</td><td>2,666,667</td><td>26.67%</td><td>$6.67M</td></tr>
+<tr><td><strong>ÖSSZESEN</strong></td><td>10,000,000</td><td>100%</td><td>$25M</td></tr>
+</tbody>
+</table>
+</div>
+<div class="key-point">⚠️ <strong>Az alapítóknak MINDIG ellenőrizniük kell a cap table-t!</strong> Ne bízd az ügyvédre - hibázhatnak, és te fizeted az árát.</div>`
+    },
+    // ==================== MODUL 4: ANTI-DILUTION ÉS PAY-TO-PLAY ====================
+    {
+        id: 4,
+        title: "Anti-dilution és Pay-to-Play",
+        icon: "🛡️",
+        time: "25 perc",
+        sections: [
+            {
+                title: "Mi az Anti-dilution?",
+                content: `<p>Az <span class="term" data-term="anti-dilution">anti-dilution</span> védelem akkor lép életbe, ha <span class="term" data-term="down round">down round</span>-ot csinálsz (alacsonyabb értékelésen veszel fel pénzt).</p>
+                <p>A korábbi befektetők több részvényt kapnak kompenzációként.</p>`,
+                warning: "A down round triggereli az anti-dilution védelmet - jelentős hígulást okozhat!"
+            },
+            {
+                title: "Full Ratchet vs Weighted Average",
+                content: `<table>
+                    <thead><tr><th>Típus</th><th>Működés</th><th>Hatás</th></tr></thead>
+                    <tbody>
+                        <tr><td><span class="term" data-term="full ratchet">Full Ratchet</span></td><td>Régi ár TELJESEN lecsökken</td><td class="text-red">AGRESSZÍV - Kerülendő!</td></tr>
+                        <tr><td><span class="term" data-term="weighted average">Weighted Average</span></td><td>Figyelembe veszi a kör méretét</td><td class="text-green">STANDARD - Elfogadható</td></tr>
+                    </tbody>
+                </table>`,
+                tip: "Mindig broad-based weighted average-et kérj, ez a fair megoldás."
+            },
+            {
+                title: "Pay-to-Play",
+                content: `<p>A <span class="term" data-term="pay-to-play">pay-to-play</span> kikényszeríti, hogy a befektetők részt vegyenek a következő körökben.</p>
+                <p>Ha NEM vesznek részt:</p>
+                <ul>
+                    <li>Preferred → common konverzió</li>
+                    <li>Elvesztik a liquidation preference-t</li>
+                    <li>Elvesztik az anti-dilution védelmet</li>
+                </ul>`,
+                tip: "A pay-to-play JÓ neked! Biztosítja, hogy a befektetők nehéz időkben is támogassanak."
+            }
+        ],
+        quiz: [
+            { q: "Melyik anti-dilution típus a legagresszívebb?", o: ["Weighted average", "Full ratchet", "Broad-based", "Nincs ilyen"], a: 1, e: "A full ratchet TELJESEN lecsökkenti a korábbi árat az új árra - extrém hígulást okoz." },
+            { q: "Mi történik pay-to-play esetén, ha a befektető nem vesz részt?", o: ["Semmi", "Preferred→common konverzió", "Több részvényt kap", "Kilép"], a: 1, e: "A részvények common-ra konvertálódnak, elveszítve a preferred jogokat." }
+        ],
+        detailed: `<h3>Anti-dilution Védelem</h3>
+<p>Az <span class="term" data-term="anti-dilution">anti-dilution</span> védelem akkor lép életbe, ha <span class="term" data-term="down round">down round</span>-ot csinálsz.</p>
+
+<div class="calc-box">
+<h5>🧮 Full Ratchet vs Weighted Average Számítás</h5>
+<p>Series A: $2M @ $10/részvény = 200,000 részvény a VC-nek<br>Series B (down round): $3M @ $5/részvény</p>
+<table>
+<thead><tr><th>Típus</th><th>Működés</th><th>VC új részvényszám</th><th>Változás</th></tr></thead>
+<tbody>
+<tr><td><span class="term" data-term="full ratchet">Full Ratchet</span></td><td>Régi ár TELJESEN lecsökken $5-ra</td><td>400,000</td><td class="text-red">+100%</td></tr>
+<tr><td><span class="term" data-term="weighted average">Weighted Average</span></td><td>Figyelembe veszi a kör méretét</td><td>246,154</td><td class="text-green">+23%</td></tr>
+</tbody>
+</table>
+<div class="result">A Full ratchet DUPLÁZZA a VC részvényeit ingyen! A Weighted average fair kompenzációt ad.</div>
+</div>
+
+<h3>Pay-to-Play</h3>
+<p>A <span class="term" data-term="pay-to-play">pay-to-play</span> kikényszeríti, hogy a befektetők részt vegyenek a következő körökben. Ha nem vesznek részt:</p>
+<ul>
+<li>Preferred részvények common-ra konvertálódnak</li>
+<li>Elveszítik a liquidation preference-t</li>
+<li>Elveszítik az anti-dilution védelmet</li>
+</ul>
+<div class="key-point">💡 <strong>A pay-to-play JÓ neked!</strong> Biztosítja, hogy a befektetők ne csak a jó időkben támogassanak.</div>`
+    },
+    // ==================== MODUL 5: KONTROLL FELTÉTELEK ====================
+    {
+        id: 5,
+        title: "Kontroll Feltételek",
+        icon: "🎛️",
+        time: "25 perc",
+        sections: [
+            {
+                title: "Board of Directors",
+                content: `<p>A <span class="term" data-term="board of directors">board</span> a cég legfőbb irányító szerve.</p>
+                <table>
+                    <thead><tr><th>Pozíció</th><th>Ki választja</th></tr></thead>
+                    <tbody>
+                        <tr><td>Common Seat (2×)</td><td class="text-blue">Alapítók</td></tr>
+                        <tr><td>Preferred Seat (2×)</td><td class="text-purple">VC-k</td></tr>
+                        <tr><td>Független</td><td class="text-yellow">Közös döntés</td></tr>
+                    </tbody>
+                </table>`,
+                warning: "A független tag a 'tie-breaker' - NAGYON fontos, ki lesz az!"
+            },
+            {
+                title: "Protective Provisions",
+                content: `<p>A <span class="term" data-term="protective provisions">protective provisions</span> = VC vétójogok:</p>
+                <ul>
+                    <li>Cég eladása vagy merger</li>
+                    <li>Új részvényosztály létrehozása</li>
+                    <li>Alapító okirat módosítása</li>
+                    <li>Board méret változtatás</li>
+                    <li>Hitelfelvétel limit felett</li>
+                </ul>`,
+                tip: "A hitelfelvételi limit emelése gyakran az első, amit sikerül megtárgyalni."
+            },
+            {
+                title: "Drag-Along és Conversion",
+                content: `<div class="grid-2">
+                    <div class="grid-box blue">
+                        <h4><span class="term" data-term="drag-along">Drag-Along</span></h4>
+                        <p>Ha többség egyetért az eladással, mindenki köteles eladni.</p>
+                    </div>
+                    <div class="grid-box purple">
+                        <h4>Conversion</h4>
+                        <p>Preferred bárikor átváltható common-ra. Automatikus <span class="term" data-term="qualified ipo">Qualified IPO</span>-nál.</p>
+                    </div>
+                </div>`,
+                tip: "A drag-along véd a 'túszejtő' kisbefektetőktől."
+            }
+        ],
+        quiz: [
+            { q: "Ki a 'tie-breaker' egy 5 fős boardon (2-2-1)?", o: ["CEO", "Lead VC", "Független tag", "Alapító"], a: 2, e: "A független tag döntőbíró szerepet tölt be 2-2 szavazatnál." },
+            { q: "Mi a drag-along jog?", o: ["VC kiléphet bármikor", "Többség kényszerítheti kisebbséget eladásra", "Alapító vétójog", "Osztalék jog"], a: 1, e: "A drag-along lehetővé teszi, hogy a többség kényszerítse a kisebbséget az eladásra." }
+        ],
+        detailed: `<h3>Board of Directors</h3>
+<p>A <span class="term" data-term="board of directors">board</span> (igazgatótanács) a cég legfőbb irányító szerve. A CEO a board-nak tartozik beszámolással, és a board nevezi ki/váltja le a CEO-t.</p>
+
+<table>
+<thead><tr><th>Pozíció</th><th>Ki választja</th><th>Tipikus személy</th></tr></thead>
+<tbody>
+<tr><td><strong>1. Common Seat</strong></td><td class="text-blue">Alapítók</td><td>CEO</td></tr>
+<tr><td><strong>2. Common Seat</strong></td><td class="text-blue">Alapítók</td><td>Co-founder</td></tr>
+<tr><td><strong>3. Preferred Seat</strong></td><td class="text-purple">VC-k</td><td>Lead VC partner</td></tr>
+<tr><td><strong>4. Preferred Seat</strong></td><td class="text-purple">VC-k</td><td>Második VC</td></tr>
+<tr><td><strong>5. Független</strong></td><td class="text-yellow">Közös döntés</td><td>Iparági szakértő</td></tr>
+</tbody>
+</table>
+
+<div class="key-point">⚠️ A független tag a <strong>'tie-breaker'</strong> - NAGYON fontos, ki lesz az! Egy jól működő 5 fős boardon (2 common, 2 preferred, 1 független) ő a döntőbíró.</div>
+
+<h3>Protective Provisions (Vétójogok)</h3>
+<p>A <span class="term" data-term="protective provisions">protective provisions</span> olyan döntések listája, amihez a VC-k beleegyezése szükséges. Ez effektíve vétójog.</p>
+
+<div class="example-box">
+<h5>Tipikus vétójogok:</h5>
+<ul>
+<li>Cég eladása vagy merger</li>
+<li>Új részvényosztály létrehozása</li>
+<li>Alapító okirat módosítása</li>
+<li>Board méretének változtatása</li>
+<li>Osztalék kifizetése</li>
+<li>Hitelfelvétel bizonyos összeg felett</li>
+</ul>
+</div>
+<div class="key-point">💡 A hitelfelvételi limit emelése gyakran az első, amit sikerül megtárgyalni. Kezdd ott!</div>
+
+<h3>Drag-Along és Conversion</h3>
+<div class="grid-2">
+<div class="grid-box blue">
+<h4>Drag-Along Rights</h4>
+<p>Ha a többség (általában 50%+ preferred + common) egyetért az eladással, <strong>mindenki köteles eladni</strong>. Ez véd a 'túszejtő' kisbefektetőktől.</p>
+</div>
+<div class="grid-box purple">
+<h4>Conversion Rights</h4>
+<p>A preferred bárikor átváltható common-ra. <strong>Automatikus konverzió</strong> <span class="term" data-term="qualified ipo">Qualified IPO</span> esetén (általában $50M+ és meghatározott részvényár).</p>
+</div>
+</div>
+
+<h3>Egyéb Term Sheet Feltételek</h3>
+
+<h4>Dividends (Osztalék)</h4>
+<p>A legtöbb startup nem fizet osztalékot, de a term sheet általában tartalmaz osztalék rendelkezést:</p>
+<ul>
+<li><strong>Cumulative dividends:</strong> Ha nem fizetik ki, halmozódik - <span class="text-red">KERÜLENDŐ!</span></li>
+<li><strong>Non-cumulative dividends:</strong> Csak ha a board megszavazza - elfogadható</li>
+</ul>
+
+<h4>Redemption Rights</h4>
+<p>A redemption jog lehetővé teszi a VC-nek, hogy 5-7 év után 'visszaadassa' a részvényeit a cégnek. Ez ritka, de veszélyes lehet, ha a cégnek nincs pénze a visszaváltásra.</p>
+<div class="key-point">💡 Próbálj megszabadulni a redemption right-tól, vagy legalább told ki 7+ évre és kösd board jóváhagyáshoz.</div>
+
+<h4>Information Rights</h4>
+<p>Standard információs jogok a VC-k számára:</p>
+<ul>
+<li>Negyedéves pénzügyi jelentés</li>
+<li>Éves audit</li>
+<li>Éves költségvetés és üzleti terv</li>
+<li>Cap table hozzáférés</li>
+</ul>
+
+<h4>Pro Rata Rights</h4>
+<p>A <span class="term" data-term="pro rata rights">pro rata</span> jog lehetővé teszi a befektetőnek, hogy a következő körökben arányosan részt vegyen, megtartva a tulajdoni arányát.</p>
+<div class="key-point">💡 A pro rata általában elfogadható - a befektetők szeretnek 'double-down'-olni a nyertes cégekre.</div>
+
+<h4>No-Shop Clause</h4>
+<p>Az exkluzivitási záradék (<span class="term" data-term="no-shop clause">no-shop</span>, 45-60 nap) megtiltja más befektetőkkel való tárgyalást a term sheet aláírása után. Ez az egyik KÖTELEZŐ eleme a term sheet-nek.</p>
+<div class="key-point">⚠️ Figyelj oda, hogy legyen <strong>'auto-terminate' klauzula</strong> - ha a VC abbahagyja a due diligence-t, a no-shop automatikusan megszűnik.</div>`
+    },
+    // ==================== MODUL 6: A VC MŰKÖDÉSE ÉS TÁRGYALÁS ====================
+    {
+        id: 6,
+        title: "A VC Működése",
+        icon: "🏦",
+        time: "35 perc",
+        sections: [
+            {
+                title: "LP és GP Struktúra",
+                content: `<div class="grid-2">
+                    <div class="grid-box blue">
+                        <h4>Limited Partners (LP)</h4>
+                        <p>Adják a pénzt: nyugdíjalapok, endowmentek, family offices</p>
+                    </div>
+                    <div class="grid-box purple">
+                        <h4>General Partners (GP)</h4>
+                        <p>Kezelik a pénzt: döntések, board tagság, exit</p>
+                    </div>
+                </div>`,
+                tip: "A GP-k általában az alap 1-5%-át fektetik be saját pénzükből."
+            },
+            {
+                title: "Fee és Carry",
+                content: `<table>
+                    <thead><tr><th>Típus</th><th>Mérték</th><th>Jelentés</th></tr></thead>
+                    <tbody>
+                        <tr><td><span class="term" data-term="management fee">Management Fee</span></td><td>1.5-2.5%/év</td><td>Működési költségek</td></tr>
+                        <tr><td><span class="term" data-term="carried interest">Carried Interest</span></td><td>~20% profit</td><td>A FŐ motiváció!</td></tr>
+                    </tbody>
+                </table>`,
+                warning: "Késői fázisú alap (7-8. év) türelmetlenebb lehet az exitre!"
+            },
+            {
+                title: "Alap Életciklusa",
+                content: `<table>
+                    <thead><tr><th>Év</th><th>Fázis</th><th>Tevékenység</th></tr></thead>
+                    <tbody>
+                        <tr><td>1-3</td><td class="text-blue">Befektetés</td><td>70-80% tőke kihelyezése</td></tr>
+                        <tr><td>4-6</td><td class="text-yellow">Follow-on</td><td>Portfólió támogatása</td></tr>
+                        <tr><td>7-10</td><td class="text-green">Harvesting</td><td>Exitek, alap lezárása</td></tr>
+                    </tbody>
+                </table>`,
+                tip: "Kérdezd meg a VC-t, hány éves az alapjuk - ez befolyásolja türelmüket."
+            }
+        ],
+        quiz: [
+            { q: "Mi a 'carried interest'?", o: ["Éves fee", "Profit ~20%-a a GP-knek", "Hitelkamat", "LP osztalék"], a: 1, e: "A carry a profit része, amit a GP-k kapnak sikeres exitek után." },
+            { q: "Melyik fázisban türelmetlenebb egy VC alap?", o: ["1-3 év", "4-6 év", "7-10 év", "Mindegy"], a: 2, e: "A 7-10. évben az alap a 'harvesting' fázisban van, nyomás alatt az exitre." }
+        ],
+        detailed: `<h3>LP és GP Struktúra</h3>
+<p>A VC alapok általában <span class="term" data-term="limited partnership">Limited Partnership (LP)</span> struktúrában működnek:</p>
+
+<div class="grid-2">
+<div class="grid-box blue">
+<h4>Limited Partners (LP) - A pénzt adják:</h4>
+<ul>
+<li>Nyugdíjalapok (legnagyobb LP kategória)</li>
+<li>Egyetemi endowmentek (Yale, Harvard)</li>
+<li>Family offices (gazdag családok)</li>
+<li>Fund of funds</li>
+<li>Szuverén alapok (állami vagyon)</li>
+</ul>
+</div>
+<div class="grid-box purple">
+<h4>General Partners (GP) - A pénzt kezelik:</h4>
+<ul>
+<li>Hozzák a befektetési döntéseket</li>
+<li>Ülnek a portfólió cégek boardjaiban</li>
+<li>Segítik a portfólió cégeket</li>
+<li>Kezelik az exiteket</li>
+</ul>
+</div>
+</div>
+
+<h3>Management Fee és Carried Interest</h3>
+<table>
+<thead><tr><th>Típus</th><th>Mérték</th><th>Példa ($200M alap)</th></tr></thead>
+<tbody>
+<tr><td><span class="term" data-term="management fee">Management Fee</span></td><td>Évi 1.5-2.5%</td><td>$3-5M / év</td></tr>
+<tr><td><span class="term" data-term="carried interest">Carried Interest</span></td><td>~20% a profitból</td><td>Miután LP-k visszakapták tőkéjüket</td></tr>
+</tbody>
+</table>
+
+<h3>Miért Keresnek Home Run-okat?</h3>
+<p>A carry struktúra miatt <strong>egy nagy hozam sokkal értékesebb, mint sok közepes</strong>. Példa:</p>
+
+<div class="calc-box">
+<h5>🧮 Home Run vs Közepes Hozamok</h5>
+<table>
+<thead><tr><th>Szcenárió</th><th>Befektetések</th><th>Összes return</th><th>Profit</th><th>GP Carry</th></tr></thead>
+<tbody>
+<tr><td><strong>A:</strong> Mind 3× return</td><td>10 × $5M</td><td>~$150M</td><td>~$100M</td><td>~$20M</td></tr>
+<tr><td><strong>B:</strong> 1 db 30× + 9 bukik</td><td>10 × $5M</td><td>~$150M</td><td>~$100M</td><td>~$20M</td></tr>
+</tbody>
+</table>
+<div class="result">Ugyanaz a carry - de a B szcenárió SOKKAL könnyebb elérni!<br>Ezért keresnek a VC-k olyan cégeket, amik képesek 10-100×-os hozamot hozni.</div>
+</div>
+
+<h3>Az Alap Életciklusa</h3>
+<table>
+<thead><tr><th>Év</th><th>Fázis</th><th>Tevékenység</th></tr></thead>
+<tbody>
+<tr><td>1-3</td><td class="text-blue"><strong>Befektetés</strong></td><td>A tőke nagy részét (70-80%) befektetik</td></tr>
+<tr><td>4-6</td><td class="text-yellow"><strong>Follow-on</strong></td><td>Meglévő portfólió támogatása</td></tr>
+<tr><td>7-10</td><td class="text-green"><strong>Harvesting</strong></td><td>Exitek realizálása, alap lezárása</td></tr>
+</tbody>
+</table>
+
+<div class="key-point">⚠️ <strong>Ha egy VC alap 7-8. évében jár, TÜRELMETLENEBB lehet az exitre!</strong> Kérdezd meg, hány éves az alapjuk.</div>
+
+<h3>Finanszírozási Fázisok</h3>
+
+<h4>Seed Fázis</h4>
+<p>Jellemzők:</p>
+<ul>
+<li>Legalacsonyabb jogi költségek, de legnagyobb hiba potenciál</li>
+<li>A precedens számít - amit itt beállítasz, az marad</li>
+<li>Gyakran <span class="term" data-term="convertible note">convertible note</span> vagy SAFE</li>
+</ul>
+
+<div class="grid-2">
+<div class="grid-box blue">
+<h4>Convertible Note</h4>
+<p><strong>Előny:</strong> Egyszerűbb, olcsóbb, nincs értékelés</p>
+<p><strong>Hátrány:</strong> Lehet magasabb végső ár</p>
+<p><strong>Mikor:</strong> Gyors lezárás kell</p>
+</div>
+<div class="grid-box purple">
+<h4>Seed Preferred</h4>
+<p><strong>Előny:</strong> Tiszta tulajdoni struktúra</p>
+<p><strong>Hátrány:</strong> Drágább, több tárgyalás</p>
+<p><strong>Mikor:</strong> Van idő és pénz a tárgyalásra</p>
+</div>
+</div>
+
+<h4>Early Stage (Series A/B)</h4>
+<p>Az első VC kör feltételei általában fennmaradnak. Amit itt beállítasz:</p>
+<ul>
+<li>Liquidation preference struktúra</li>
+<li>Anti-dilution típus</li>
+<li>Board összetétel</li>
+<li>Protective provisions</li>
+</ul>
+<div class="key-point">⚠️ Az első VC kör feltételei <strong>precedenst teremtenek</strong>. Tárgyalj keményen!</div>
+
+<h4>Mid/Late Stage (Series C+)</h4>
+<p>Új kihívások:</p>
+<ul>
+<li><strong>Board kontroll problémák</strong> (7-9 tag)</li>
+<li><strong>Értékelési problémák</strong> - túl magas valuáció blokkol kisebb exiteket</li>
+<li><strong>Liquidation stack</strong> - több kör preference halmozódik</li>
+</ul>`
+    }
+];
+
+// ==================== STATE ====================
+let state = {
+    currentModule: 0,
+    currentSection: 0,
+    showQuiz: false,
+    showDetailed: false,
+    quizState: { current: 0, score: 0, answered: false, selected: null },
+    completed: {},
+    results: {},
+    showDefinition: null,
+    definitionPos: { x: 0, y: 0 }
+};
+
+// ==================== RENDER ====================
+function render() {
+    const app = document.getElementById('app');
+    const mod = MODULES[state.currentModule];
+    const sec = mod.sections[state.currentSection];
+    const totalProgress = Object.keys(state.completed).length;
+    const progressPct = Math.round((totalProgress / MODULES.length) * 100);
+    const circumference = 2 * Math.PI * 18;
+    
+    const userName = currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Felhasználó';
+    const userInitial = userName.charAt(0).toUpperCase();
+
+    app.innerHTML = `
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">📚</span>
+                    <div class="logo-text">
+                        <h1>🎓 Venturesuli</h1>
+                        <p>Brad Feld & Jason Mendelson könyve alapján</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="progress-container">
+                        <div class="progress-info">
+                            <p>Haladás</p>
+                            <span>${totalProgress}/${MODULES.length} modul</span>
+                        </div>
+                        <div class="progress-ring">
+                            <svg width="48" height="48">
+                                <circle class="bg" cx="24" cy="24" r="18"/>
+                                <circle class="fg" cx="24" cy="24" r="18" 
+                                    stroke-dasharray="${(progressPct / 100) * circumference} ${circumference}"/>
+                            </svg>
+                            <span class="progress-text">${progressPct}%</span>
+                        </div>
+                    </div>
+                    <button class="glossary-btn" onclick="downloadGlossaryPDF()">📖 Fogalomtár PDF</button>
+                    <div class="user-info">
+                        <div class="user-avatar">${userInitial}</div>
+                        <span class="user-name">${userName}</span>
+                    </div>
+                    <button class="logout-btn" onclick="handleLogout()">Kijelentkezés</button>
+                    <button class="delete-account-btn" onclick="showDeleteAccountModal()">🗑️ Fiók törlése</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="layout">
+                <aside class="sidebar">
+                    <div class="sidebar-header">
+                        <h2>Modulok</h2>
+                        <button class="reset-btn" onclick="resetProgress()">Reset</button>
+                    </div>
+                    <div class="module-list">
+                        ${MODULES.map((m, i) => `
+                            <div class="module-item ${state.currentModule === i ? 'active' : ''}" 
+                                 onclick="selectModule(${i})">
+                                <span class="module-icon">${m.icon}</span>
+                                <div class="module-info">
+                                    <div class="module-title">${m.title}</div>
+                                    <div class="module-meta">${m.time}</div>
+                                </div>
+                                ${state.completed[m.id] ? '<span class="module-check">✓</span>' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </aside>
+
+                <main class="main">
+                    <div class="card">
+                        <div class="module-header">
+                            <div class="module-header-content">
+                                <span class="module-header-icon">${mod.icon}</span>
+                                <div class="module-header-text">
+                                    <span class="label">Modul ${state.currentModule + 1} / ${MODULES.length}</span>
+                                    <h2>${mod.title}</h2>
+                                </div>
+                            </div>
+                            ${!state.showQuiz ? `
+                                <div class="section-nav">
+                                    ${mod.sections.map((_, i) => `
+                                        <div class="section-dot ${i === state.currentSection ? 'active' : ''}" 
+                                             onclick="goToSection(${i})"></div>
+                                    `).join('')}
+                                    <div class="section-dot quiz ${state.showQuiz ? 'active' : ''}" 
+                                         onclick="startQuiz()"></div>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="content">
+                            ${state.showQuiz ? renderQuiz(mod) : renderSection(sec, mod)}
+                        </div>
+
+                        ${!state.showQuiz ? `
+                            <div class="nav-footer">
+                                <button class="nav-btn nav-btn-secondary" onclick="prevSection()" 
+                                        ${state.currentSection === 0 ? 'disabled' : ''}>
+                                    ← Előző
+                                </button>
+                                ${state.completed[mod.id] ? `
+                                    <button class="nav-btn nav-btn-primary" onclick="goToNextModule()" 
+                                            ${state.currentModule >= MODULES.length - 1 ? 'disabled' : ''}>
+                                        ${state.currentModule < MODULES.length - 1 ? 'Következő modul →' : '🎉 Tanfolyam teljesítve!'}
+                                    </button>
+                                ` : `
+                                    <button class="nav-btn nav-btn-primary" onclick="nextSection()">
+                                        ${state.currentSection < mod.sections.length - 1 ? 'Következő →' : 'Kvíz indítása →'}
+                                    </button>
+                                `}
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    ${state.completed[mod.id] && !state.showQuiz ? `
+                        <div class="completion-badge">
+                            <span class="icon">🏆</span>
+                            <div>
+                                <h4>Modul teljesítve!</h4>
+                                <p>Kvíz eredmény: ${state.results[mod.id]?.score}/${state.results[mod.id]?.total} pont</p>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="attribution">
+                        <h4>Forrás</h4>
+                        <p><span class="book-title">"Venture Deals"</span> - Brad Feld & Jason Mendelson</p>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        ${state.showDefinition ? `
+            <div class="definition-popup" style="left: ${state.definitionPos.x}px; top: ${state.definitionPos.y}px;">
+                <button class="close-btn" onclick="closeDefinition()">×</button>
+                <div class="term-name">${state.showDefinition.term}</div>
+                <div class="term-def">${state.showDefinition.definition}</div>
+            </div>
+        ` : ''}
+    `;
+
+    document.querySelectorAll('.term').forEach(el => {
+        el.addEventListener('click', (e) => showDefinition(e, el.dataset.term));
+    });
+}
+
+function renderSection(sec, mod) {
+    return `
+        <h3 class="section-title">${sec.title}</h3>
+        <div class="section-body">${sec.content}</div>
+        ${sec.tip ? `<div class="tip-box"><span class="icon">💡</span><p>${sec.tip}</p></div>` : ''}
+        ${sec.warning ? `<div class="warning-box"><span class="icon">⚠️</span><p>${sec.warning}</p></div>` : ''}
+        ${mod.detailed ? `
+            <div class="learn-more-section">
+                <button class="learn-more-toggle ${state.showDetailed ? 'open' : ''}" onclick="toggleDetailed()">
+                    📖 Tudj meg többet <span class="arrow">▼</span>
+                </button>
+                <div class="learn-more-content ${state.showDetailed ? 'open' : ''}">
+                    <button class="pdf-btn" onclick="downloadPDF()">📥 PDF letöltés</button>
+                    <div class="detailed-summary">${mod.detailed}</div>
+                </div>
+            </div>
+        ` : ''}
+    `;
+}
+
+function renderQuiz(mod) {
+    const quiz = mod.quiz;
+    const qs = state.quizState;
+    
+    if (qs.current >= quiz.length) {
+        const pct = Math.round((qs.score / quiz.length) * 100);
+        return `
+            <div class="quiz-results">
+                <span class="icon">${pct >= 70 ? '🎉' : '📚'}</span>
+                <h3>Kvíz vége!</h3>
+                <div class="score">${qs.score}/${quiz.length}</div>
+                <p class="pct">${pct}% - ${pct >= 70 ? 'Szép munka!' : 'Érdemes átismételni!'}</p>
+                <div class="buttons">
+                    <button class="nav-btn nav-btn-secondary" onclick="restartQuiz()">Újra</button>
+                    <button class="nav-btn nav-btn-primary" onclick="finishQuiz()">Befejezés</button>
+                </div>
+            </div>
+        `;
+    }
+
+    const q = quiz[qs.current];
+    return `
+        <div class="quiz-header"><h3>Kérdés ${qs.current + 1}/${quiz.length}</h3><span>${qs.score} pont</span></div>
+        <div class="quiz-progress"><div class="quiz-progress-bar" style="width: ${((qs.current + (qs.answered ? 1 : 0)) / quiz.length) * 100}%"></div></div>
+        <p class="quiz-question">${q.q}</p>
+        <div class="quiz-options">
+            ${q.o.map((opt, i) => `
+                <button class="quiz-option ${qs.answered ? (i === q.a ? 'correct' : i === qs.selected ? 'incorrect' : '') : qs.selected === i ? 'selected' : ''}" 
+                    onclick="selectAnswer(${i})" ${qs.answered ? 'disabled' : ''}>
+                    ${String.fromCharCode(65 + i)}) ${opt}
+                </button>
+            `).join('')}
+        </div>
+        ${qs.answered ? `<div class="quiz-feedback ${qs.selected === q.a ? 'correct' : 'incorrect'}">
+            <p class="title">${qs.selected === q.a ? '✓ Helyes!' : '✗ Helytelen'}</p>
+            <p class="explanation">${q.e}</p>
+        </div>` : ''}
+        <div class="nav-footer" style="border:none; padding-top:20px;">
+            <div></div>
+            ${!qs.answered ? `<button class="nav-btn nav-btn-primary" onclick="checkAnswer()" ${qs.selected === null ? 'disabled' : ''}>Ellenőrzés</button>` 
+            : `<button class="nav-btn nav-btn-primary" onclick="nextQuestion()">${qs.current < quiz.length - 1 ? 'Következő →' : 'Eredmény →'}</button>`}
+        </div>
+    `;
+}
+
+// ==================== ACTIONS ====================
+window.selectModule = (i) => { state.currentModule = i; state.currentSection = 0; state.showQuiz = false; state.showDetailed = false; state.quizState = { current: 0, score: 0, answered: false, selected: null }; render(); };
+window.goToNextModule = () => { if (state.currentModule < MODULES.length - 1) { state.currentModule++; state.currentSection = 0; state.showQuiz = false; state.showDetailed = false; state.quizState = { current: 0, score: 0, answered: false, selected: null }; render(); } };
+window.goToSection = (i) => { state.currentSection = i; state.showDetailed = false; render(); };
+window.nextSection = () => { const mod = MODULES[state.currentModule]; if (state.currentSection < mod.sections.length - 1) { state.currentSection++; state.showDetailed = false; } else { state.showQuiz = true; state.quizState = { current: 0, score: 0, answered: false, selected: null }; } render(); };
+window.prevSection = () => { if (state.currentSection > 0) { state.currentSection--; state.showDetailed = false; } render(); };
+window.startQuiz = () => { state.showQuiz = true; state.quizState = { current: 0, score: 0, answered: false, selected: null }; render(); };
+window.selectAnswer = (i) => { if (!state.quizState.answered) { state.quizState.selected = i; render(); } };
+window.checkAnswer = () => { const q = MODULES[state.currentModule].quiz[state.quizState.current]; if (state.quizState.selected === q.a) state.quizState.score++; state.quizState.answered = true; render(); };
+window.nextQuestion = () => { state.quizState.current++; state.quizState.answered = false; state.quizState.selected = null; render(); };
+window.restartQuiz = () => { state.quizState = { current: 0, score: 0, answered: false, selected: null }; render(); };
+window.finishQuiz = async () => { const mod = MODULES[state.currentModule]; state.completed[mod.id] = true; state.results[mod.id] = { score: state.quizState.score, total: mod.quiz.length }; state.showQuiz = false; state.currentSection = 0; await saveProgress(); render(); };
+window.toggleDetailed = () => { state.showDetailed = !state.showDetailed; render(); };
+window.resetProgress = async () => { if (confirm('Biztosan törlöd a haladást?')) { state.completed = {}; state.results = {}; await saveProgress(); render(); } };
+
+function showDefinition(e, term) {
+    e.preventDefault(); e.stopPropagation();
+    const definition = GLOSSARY[term.toLowerCase()] || `"${term}" - Definíció nem található.`;
+    const rect = e.target.getBoundingClientRect();
+    state.showDefinition = { term, definition };
+    state.definitionPos = { x: Math.min(rect.left, window.innerWidth - 420), y: rect.bottom + window.scrollY + 10 };
+    render();
+}
+
+window.closeDefinition = () => { state.showDefinition = null; render(); };
+document.addEventListener('click', (e) => { if (state.showDefinition && !e.target.closest('.definition-popup') && !e.target.classList.contains('term')) window.closeDefinition(); });
+
+window.downloadPDF = () => {
+    const mod = MODULES[state.currentModule];
+    
+    const pdfContent = document.createElement('div');
+    pdfContent.style.cssText = 'font-family: Arial, sans-serif; padding: 40px; max-width: 800px; background: white; color: #1a1a1a; line-height: 1.6;';
+    
+    pdfContent.innerHTML = `
+        <div style="border-bottom: 2px solid #3b82f6; padding-bottom: 20px; margin-bottom: 30px;">
+            <h1 style="color: #1e293b; font-size: 28px; margin: 0 0 10px 0;">${mod.icon} ${mod.title}</h1>
+            <p style="color: #64748b; font-size: 14px; margin: 0;">Venturesuli</p>
+            <p style="color: #94a3b8; font-size: 12px; margin: 5px 0 0 0;">Brad Feld & Jason Mendelson könyve alapján</p>
+        </div>
+        <div style="font-size: 14px;">
+            ${mod.detailed
+                .replace(/class="calc-box"/g, 'style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 20px; margin: 20px 0;"')
+                .replace(/class="formula"/g, 'style="background: #1e293b; color: #fbbf24; padding: 15px; border-radius: 6px; font-family: monospace; white-space: pre-wrap; margin: 10px 0;"')
+                .replace(/class="result"/g, 'style="background: #dcfce7; color: #166534; padding: 12px; border-radius: 6px; font-weight: bold; margin-top: 10px;"')
+                .replace(/class="example-box"/g, 'style="background: #eff6ff; border: 1px solid #93c5fd; border-radius: 8px; padding: 20px; margin: 20px 0;"')
+                .replace(/class="key-point"/g, 'style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 15px 0;"')
+                .replace(/<h3>/g, '<h3 style="color: #1e293b; font-size: 20px; margin: 30px 0 15px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">')
+                .replace(/<h4>/g, '<h4 style="color: #475569; font-size: 14px; margin: 20px 0 10px 0;">')
+                .replace(/<h5>/g, '<h5 style="color: #059669; font-size: 16px; margin-bottom: 15px;">')
+                .replace(/<table>/g, '<table style="width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 13px;">')
+                .replace(/<th>/g, '<th style="background: #f1f5f9; padding: 12px; text-align: left; border: 1px solid #e2e8f0;">')
+                .replace(/<td>/g, '<td style="padding: 12px; border: 1px solid #e2e8f0;">')
+                .replace(/<strong>/g, '<strong style="color: #0f172a;">')
+            }
+        </div>
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center;">
+            <p style="color: #94a3b8; font-size: 11px;">© 2024 Venturesuli (venturesuli.hu)</p>
+        </div>
+    `;
+    
+    html2pdf().set({
+        margin: 10,
+        filename: mod.title.replace(/[^a-zA-Z0-9áéíóöőúüűÁÉÍÓÖŐÚÜŰ\s]/g, '') + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).from(pdfContent).save();
+};
+
+window.downloadGlossaryPDF = () => {
+    const sortedTerms = Object.entries(GLOSSARY).sort((a, b) => a[0].localeCompare(b[0], 'hu'));
+    
+    const pdfContent = document.createElement('div');
+    pdfContent.style.cssText = 'font-family: Arial, sans-serif; padding: 40px; max-width: 800px; background: white; color: #1a1a1a; line-height: 1.6;';
+    
+    pdfContent.innerHTML = `
+        <div style="border-bottom: 3px solid #8b5cf6; padding-bottom: 20px; margin-bottom: 30px; text-align: center;">
+            <h1 style="color: #1e293b; font-size: 32px; margin: 0 0 10px 0;">📖 Venturesuli Fogalomtár</h1>
+            <p style="color: #64748b; font-size: 14px; margin: 0;">A kockázati tőke befektetések legfontosabb fogalmai</p>
+            <p style="color: #94a3b8; font-size: 12px; margin: 10px 0 0 0;">Brad Feld & Jason Mendelson "Venture Deals" könyve alapján</p>
+        </div>
+        
+        <div style="column-count: 1; column-gap: 30px;">
+            ${sortedTerms.map(([term, def]) => `
+                <div style="break-inside: avoid; margin-bottom: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; border-left: 4px solid #8b5cf6;">
+                    <h3 style="color: #4f46e5; font-size: 16px; margin: 0 0 8px 0; text-transform: capitalize;">${term}</h3>
+                    <p style="color: #475569; font-size: 13px; margin: 0; line-height: 1.5;">${def}</p>
+                </div>
+            `).join('')}
+        </div>
+        
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e2e8f0; text-align: center;">
+            <p style="color: #64748b; font-size: 12px; margin: 0;">Összesen ${sortedTerms.length} fogalom</p>
+            <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">© 2024 Venturesuli (venturesuli.hu)</p>
+        </div>
+    `;
+    
+    html2pdf().set({
+        margin: 10,
+        filename: 'Venturesuli-Fogalomtar.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).from(pdfContent).save();
+};
+
+// ==================== FIREBASE FUNCTIONS ====================
+async function saveProgress() {
+    if (!currentUser) return;
+    try {
+        await db.collection('users').doc(currentUser.uid).update({
+            progress: { completed: state.completed, results: state.results },
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    } catch (error) { console.error('Error saving progress:', error); }
+}
+
+async function loadProgress() {
+    if (!currentUser) return;
+    try {
+        const doc = await db.collection('users').doc(currentUser.uid).get();
+        if (doc.exists && doc.data().progress) {
+            const progress = doc.data().progress;
+            state.completed = progress.completed || {};
+            state.results = progress.results || {};
+        }
+    } catch (error) { console.error('Error loading progress:', error); }
+}
+
+window.handleLogout = async () => {
+    try {
+        await auth.signOut();
+        window.location.href = 'index.html';
+    } catch (error) { console.error('Logout error:', error); }
+};
+
+// ==================== ACCOUNT DELETION ====================
+window.showDeleteAccountModal = () => {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.id = 'deleteAccountModal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-icon">⚠️</div>
+            <h2 class="modal-title">Fiók törlése</h2>
+            <p class="modal-text">Biztosan törölni szeretnéd a fiókodat? Ez a művelet <strong>nem visszavonható</strong>.</p>
+            <div class="modal-warning">
+                <strong>A következők törlődnek véglegesen:</strong><br>
+                • Minden haladási adatod<br>
+                • Kvíz eredményeid<br>
+                • Felhasználói fiókod
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeDeleteAccountModal()">Mégse</button>
+                <button class="modal-btn modal-btn-delete" id="confirmDeleteBtn" onclick="confirmDeleteAccount()">Véglegesen törlöm</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+};
+
+window.closeDeleteAccountModal = () => {
+    const modal = document.getElementById('deleteAccountModal');
+    if (modal) modal.remove();
+};
+
+window.confirmDeleteAccount = async () => {
+    const deleteBtn = document.getElementById('confirmDeleteBtn');
+    if (deleteBtn) {
+        deleteBtn.disabled = true;
+        deleteBtn.textContent = 'Törlés folyamatban...';
+    }
+    
+    try {
+        const user = auth.currentUser;
+        if (!user) {
+            alert('Nincs bejelentkezett felhasználó.');
+            return;
+        }
+        
+        // 1. Delete user data from Firestore
+        await db.collection('users').doc(user.uid).delete();
+        console.log('User data deleted from Firestore');
+        
+        // 2. Delete the Firebase Auth account
+        await user.delete();
+        console.log('User account deleted');
+        
+        // 3. Close modal and redirect
+        closeDeleteAccountModal();
+        alert('A fiókod sikeresen törölve lett. Köszönjük, hogy velünk tanultál!');
+        window.location.href = 'index.html';
+        
+    } catch (error) {
+        console.error('Delete account error:', error);
+        
+        // Handle re-authentication requirement
+        if (error.code === 'auth/requires-recent-login') {
+            closeDeleteAccountModal();
+            alert('Biztonsági okokból újra be kell jelentkezned a fiók törléséhez. Kérlek jelentkezz ki, majd újra be, és próbáld újra.');
+        } else {
+            alert('Hiba történt a fiók törlésekor: ' + error.message);
+        }
+        
+        if (deleteBtn) {
+            deleteBtn.disabled = false;
+            deleteBtn.textContent = 'Véglegesen törlöm';
+        }
+    }
+};
+
+// ==================== AUTH CHECK ====================
+auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        // Check if user has paid
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        if (userDoc.exists && userDoc.data().hasPaid) {
+            currentUser = user;
+            userData = userDoc.data();
+            await loadProgress();
+            document.getElementById('loading-overlay').classList.add('hidden');
+            render();
+        } else {
+            window.location.href = 'payment.html?userId=' + user.uid + '&email=' + encodeURIComponent(user.email);
+        }
+    } else {
+        window.location.href = 'auth.html';
+    }
+});
+    </script>
+</body>
+</html>
